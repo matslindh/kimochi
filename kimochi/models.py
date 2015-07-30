@@ -126,12 +126,23 @@ class User(Base):
     id = Column(Integer, primary_key=True)
 
     email = Column(Text(length=80), unique=True)
-    password = Column(PasswordType)
+    password = Column(PasswordType(schemes=[
+            'bcrypt',
+        ]))
 
     admin = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
 
     sites = relationship("Site", secondary="users_sites", backref="users")
+
+    @classmethod
+    def sign_in(cls, email, password):
+        user = DBSession.query(cls).filter(User.email == email).first()
+
+        if user and user.password == password:
+            return user
+
+        return None
 
 class UserSite(Base):
     __tablename__ = 'users_sites'
