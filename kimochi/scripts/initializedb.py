@@ -14,7 +14,8 @@ from pyramid.scripts.common import parse_vars
 from ..models import (
     DBSession,
     Base,
-    )
+    User,
+)
 
 
 def usage(argv):
@@ -34,3 +35,6 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
+
+    with transaction.manager:
+        DBSession.add(User(email='test@example.com', password='test', admin=True))
