@@ -128,6 +128,7 @@ class User(Base):
     email = Column(Text(length=80), unique=True)
     password = Column(PasswordType)
 
+    admin = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
 
     sites = relationship("Site", secondary="users_sites", backref="users")
