@@ -11,6 +11,7 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
 requires = [
     'passlib',
     'pyramid',
+    'pyramid_beaker',
     'pyramid_chameleon',
     'pyramid_debugtoolbar',
     'pyramid_tm',
