@@ -19,10 +19,18 @@ from sqlalchemy_utils.types.password import (
     PasswordType
 )
 
+from pyramid.security import (
+    Allow,
+    Deny,
+    Authenticated,
+    Everyone,
+)
+
 from zope.sqlalchemy import ZopeTransactionExtension
 
 import calendar
 import time
+import pyramid.security
 
 def epoch():
     return calendar.timegm(time.gmtime())
@@ -152,3 +160,13 @@ class UserSite(Base):
 
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True, primary_key=True)
     site = relationship('Site')
+
+
+class RootFactory:
+    __acl__ = [
+        (Allow, Authenticated, Authenticated),
+    ]
+
+    def __init__(self, request):
+        pass
+
