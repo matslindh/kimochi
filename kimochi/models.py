@@ -4,6 +4,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    Table,
     Text,
     )
 
@@ -30,7 +31,7 @@ from zope.sqlalchemy import ZopeTransactionExtension
 
 import calendar
 import time
-import pyramid.security
+import uuid
 
 def epoch():
     return calendar.timegm(time.gmtime())
@@ -38,31 +39,11 @@ def epoch():
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
-class Site(Base):
-    __tablename__ = 'sites'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(Text(length=40), unique=True)
-    key = Column(Text(length=16), unique=True)
-
-    pages = relationship('Page')
-
-    @classmethod
-    def get_from_key(cls, key):
-        return DBSession.query(cls).filter(cls.key == key).first()
-
-    def get_pages_active(self):
-        return Page.get_active_from_site_id(self.id)
-
 class Page(Base):
     __tablename__ = 'pages'
 
     id = Column(Integer, primary_key=True)
-    type = Column(Text(length=30))
-
     name = Column(Text(length=40))
-    content = Column(Text(length=65536))
-
     deleted = Column(Boolean, default=False)
 
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
@@ -71,6 +52,10 @@ class Page(Base):
     @classmethod
     def get_active_from_site_id(cls, site_id):
         return DBSession.query(cls).filter(cls.site_id == site_id, cls.deleted == False).all()
+
+    @classmethod
+    def get_for_site_id_and_page_id(cls, site_id, page_id):
+        return DBSession.query(cls).filter(cls.site_id == site_id, cls.id == page_id, cls.deleted == False).first()
 
     def get_sections_active(self):
         return PageSection.get_active_from_page_id(self.id)
@@ -81,16 +66,25 @@ class PageSection(Base):
     id = Column(Integer, primary_key=True)
     type = Column(Text(length=30))
     order = Column(Integer, default=epoch)
+    content = Column(Text(length=65536))
 
     deleted = Column(Boolean, default=False)
 
     page_id = Column(Integer, ForeignKey('pages.id'), nullable=False, index=True)
     page = relationship('Page')
 
+    gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=True)
+    gallery = relationship('Gallery')
+
     @classmethod
     def get_active_from_page_id(cls, page_id):
         return DBSession.query(cls).filter(cls.page_id == page_id, cls.deleted == False).order_by('order').all()
 
+class Gallery(Base):
+    __tablename__ = 'galleries'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(Text, nullable=False)
 
 class Image(Base):
     __tablename__ = 'images'
@@ -101,32 +95,42 @@ class Image(Base):
 
     deleted = Column(Boolean, default=False)
 
-    page_id = Column(Integer, ForeignKey('pages.id'), nullable=False, index=True)
-    page = relationship('Page')
+    gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=False, index=True)
+    gallery = relationship('Gallery', backref='images')
 
-    page_section_id = Column(Integer, ForeignKey('pages_sections.id'), nullable=False, index=True)
-    page_section = relationship('PageSection')
+UserSiteTable = Table('users_sites', Base.metadata,
+    Column('user_id', Integer, ForeignKey('users.id'), nullable=False, index=True, primary_key=True),
+    Column('site_id', Integer, ForeignKey('sites.id'), nullable=False, index=True, primary_key=True)
+)
+
+class Site(Base):
+    __tablename__ = 'sites'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(Text(length=40), unique=True)
+    key = Column(Text(length=32), unique=True, default=lambda: uuid.uuid4().hex)
+
+    pages = relationship('Page')
+
+    def pages_active(self):
+        return Page.get_active_from_site_id(self.id)
 
     @classmethod
-    def get_active_from_page_id(cls, page_id):
-        return DBSession.query(cls).filter(cls.page_id == page_id, cls.deleted == False).order_by('order').all()
+    def get_from_key(cls, key):
+        return DBSession.query(cls).filter(cls.key == key).first()
 
     @classmethod
-    def get_active_from_page_section_id(cls, page_section_id):
-        return DBSession.query(cls).filter(cls.page_section_id == page_section_id, cls.deleted == False).order_by('order').all()
+    def get_from_key_and_user_id(cls, key, user_id):
+        site = cls.get_from_key(key)
 
-    @classmethod
-    def get_active_from_page_id_by_page_section_id(cls, page_id):
-        images = cls.get_active_from_page_id(page_id)
-        by_section_id = {}
+        if not site:
+            raise NotFoundException
 
-        for image in images:
-            if image.page_section_id not in by_section_id:
-                by_section_id[image.page_section_id] = []
+        for user in site.users:
+            if user.id == user_id:
+                return site
 
-            by_section_id[image.page_section_id].append(image)
-
-        return by_section_id
+        raise NoAccessException
 
 class User(Base):
     __tablename__ = 'users'
@@ -137,6 +141,7 @@ class User(Base):
     password = Column(PasswordType(schemes=[
             'bcrypt',
         ]))
+    site_limit = Column(Integer, default=1)
 
     admin = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
@@ -152,6 +157,12 @@ class User(Base):
 
         return None
 
+    @classmethod
+    def get_from_id(cls, user_id):
+        return DBSession.query(cls).filter(User.id == user_id).first()
+
+
+"""
 class UserSite(Base):
     __tablename__ = 'users_sites'
 
@@ -159,7 +170,7 @@ class UserSite(Base):
     user = relationship('User')
 
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True, primary_key=True)
-    site = relationship('Site')
+    site = relationship('Site')"""
 
 
 class RootFactory:
@@ -170,3 +181,9 @@ class RootFactory:
     def __init__(self, request):
         pass
 
+
+class NotFoundException(BaseException):
+    pass
+
+class NoAccessException(BaseException):
+    pass

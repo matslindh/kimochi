@@ -1,15 +1,29 @@
 from pyramid.config import Configurator
 from pyramid.authentication import SessionAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
-from pyramid.security import Authenticated
+from pyramid.security import (
+    Authenticated,
+    authenticated_userid,
+)
+
 from sqlalchemy import engine_from_config
 
 from .models import (
     DBSession,
     Base,
+    User,
     RootFactory,
     )
 
+from pyramid.events import subscriber
+from pyramid.events import BeforeRender
+
+@subscriber(BeforeRender)
+def add_user(event):
+    event['user'] = None
+
+    if authenticated_userid(event['request']):
+        event['user'] = User.get_from_id(authenticated_userid(event['request']))
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -33,6 +47,11 @@ def main(global_config, **settings):
     config.include('pyramid_mako')
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('index', '/')
+    config.add_route('profile', '/profile')
+    config.add_route('sites', '/sites')
+    config.add_route('site', '/sites/{site_key}')
+    config.add_route('site_page', '/sites/{site_key}/pages/{page_id}')
+    config.add_route('site_pages', '/sites/{site_key}/pages')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.scan()
