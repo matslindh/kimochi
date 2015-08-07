@@ -68,6 +68,25 @@
             form ul {
                 padding-left: 0;
             }
+
+            h3.top
+            {
+                margin-top: 0;
+            }
+
+            nav ol
+            {
+                list-style-type: none;
+                font-size: 0.8em;
+                margin: 0;
+                padding: 0;
+                margin-top: 2.0em;
+            }
+
+            nav ol li {
+                line-height: 1.6em;
+            }
+
         </style>
         <title>Kimochi</title>
     </head>
