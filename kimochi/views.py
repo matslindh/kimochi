@@ -7,6 +7,7 @@ from pyramid.httpexceptions import (
     HTTPBadRequest,
     HTTPFound,
     HTTPSeeOther,
+    HTTPNotFound,
 )
 
 from .models import (
@@ -14,6 +15,7 @@ from .models import (
     Site,
     Page,
     PageSection,
+    Gallery,
     DBSession,
     )
 
@@ -112,6 +114,26 @@ def site_page(request):
 
     if not page:
         return HTTPFound(location=request.route_url('site', site_key=site.key))
+
+    if request.POST and 'page_section_id' in request.POST:
+        page_section = page.get_page_section(request.POST['page_section_id'])
+
+        if not page_section:
+            return HTTPNotFound()
+
+        if 'section_type' in request.POST and PageSection.is_valid_type(request.POST['section_type']):
+            page_section.type = request.POST['section_type']
+
+        if 'section_content' in request.POST:
+            page_section.content = request.POST['section_content']
+
+        if 'section_gallery_id' in request.POST:
+            gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.POST['section_gallery_id'])
+
+            if not gallery:
+                return HTTPBadRequest()
+
+            page_section.gallery = gallery
 
     return {
         'site': site,

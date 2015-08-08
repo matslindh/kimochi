@@ -8,7 +8,7 @@
     <nav class="col-md-4">
         <ol class="nav nav-pills nav-stacked">
             % for page in site.pages:
-                <li ${'class="active"' if int(request.matchdict['page_id']) == page.id else 'foo' | n}>
+                <li ${'class="active"' if 'page_id' in request.matchdict and int(request.matchdict['page_id']) == page.id else 'foo' | n}>
                     <a href="${request.route_url('site_page', site_key=site.key, page_id=page.id)}">${page.name}</a>
                 </li>
             % endfor

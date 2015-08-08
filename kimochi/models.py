@@ -60,6 +60,9 @@ class Page(Base):
     def get_sections_active(self):
         return PageSection.get_active_from_page_id(self.id)
 
+    def get_page_section(self, page_section_id):
+        return PageSection.get_from_page_id_and_page_section_id(self.id, page_section_id)
+
 class PageSection(Base):
     __tablename__ = 'pages_sections'
 
@@ -71,7 +74,7 @@ class PageSection(Base):
     deleted = Column(Boolean, default=False)
 
     page_id = Column(Integer, ForeignKey('pages.id'), nullable=False, index=True)
-    page = relationship('Page')
+    page = relationship('Page', backref='sections')
 
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=True)
     gallery = relationship('Gallery')
@@ -80,11 +83,26 @@ class PageSection(Base):
     def get_active_from_page_id(cls, page_id):
         return DBSession.query(cls).filter(cls.page_id == page_id, cls.deleted == False).order_by('order').all()
 
+    @classmethod
+    def get_from_page_id_and_page_section_id(cls, page_id, page_section_id):
+        return DBSession.query(cls).filter(cls.page_id == page_id, cls.id == page_section_id, cls.deleted == False).first()
+
+    @classmethod
+    def is_valid_type(cls, page_type):
+        return page_type in ('text', 'gallery', )
+
 class Gallery(Base):
     __tablename__ = 'galleries'
 
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False)
+
+    site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
+    site = relationship('Site', backref='galleries')
+
+    @classmethod
+    def get_from_site_id_and_gallery_id(cls, site_id, gallery_id):
+        return DBSession.query(cls).filter(cls.site_id == site_id, cls.id == gallery_id).first()
 
 class Image(Base):
     __tablename__ = 'images'
