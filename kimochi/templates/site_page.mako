@@ -66,7 +66,6 @@
         if (window.location.hash && (window.location.hash.substring(0, 14) == '#page-section-'))
         {
             var section_id = window.location.hash.substring(14)
-            console.log(section_id);
             activate_section(section_id);
         }
         else
