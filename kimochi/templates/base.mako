@@ -113,6 +113,11 @@
                 display: none;
             }
 
+            .section-type-container
+            {
+                display: none;
+            }
+
         </style>
         <title>Kimochi</title>
     </head>

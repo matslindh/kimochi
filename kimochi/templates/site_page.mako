@@ -7,7 +7,7 @@
 </h3>
 
 % for section in page.sections:
-    <form method="post" id="page-section-${section.id}" class="page-section collapsed" data-section-id="${section.id}">
+    <form method="post" id="page-section-${section.id}" class="page-section collapsed" data-section-id="${section.id}" style="overflow: hidden;">
         <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
         <input type="hidden" name="page_section_id" value="${section.id}" />
         <div style="overflow: hidden; margin-bottom: 1.0em;">
@@ -19,7 +19,14 @@
             </div>
         </div>
 
-        <textarea style="clear: both; height: 300px; margin-top: 2.0em;" name="section_content">${section.content if section.content else ''}</textarea>
+        <div class="section-type-container section-type-text">
+            <textarea style="clear: both; height: 300px; margin-top: 2.0em;" name="section_content">${section.content if section.content else ''}</textarea>
+        </div>
+
+        <div class="section-type-container section-type-gallery">
+            <p>This is a gallery. Implement magic stuff here.</p>
+        </div>
+
         <input type="submit" value="Save" class="btn btn-default" style="margin-top: 0.5em; margin-bottom: 3.0em; float: right;"/>
     </form>
 
@@ -54,6 +61,7 @@
     var activate_section = function (section_id) {
         $(".page-section").hide(200);
         $(".activate-section, #page-section-" + section_id).show();
+        update_section_type(section_id);
         $("#activate-section-" + section_id).hide();
 
         $(".menu-section-link").removeClass('active');
@@ -61,6 +69,14 @@
 
         history.replaceState(null, "", "#page-section-" + section_id);
     }
+
+    var update_section_type = function (section_id) {
+        var root = $("#page-section-" + section_id);
+        var type = root.find("input[name=section_type]:checked").val();
+
+        root.find(".section-type-container").hide();
+        root.find(".section-type-" + type).show();
+    };
 
     $(document).ready(function () {
         if (window.location.hash && (window.location.hash.substring(0, 14) == '#page-section-'))
@@ -81,7 +97,10 @@
 
     $(".activate-section").click(function () {
         activate_section($(this).data('section-id'));
-
         return false;
+    });
+
+    $("input[name=section_type]").change(function () {
+        update_section_type($(this).closest("form").data('section-id'));
     });
 </script>
