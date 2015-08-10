@@ -22,6 +22,16 @@
                 display: inline-block;
             }
 
+            header div h1>a {
+                text-decoration: none;
+                color: inherit;
+            }
+
+            header div h1>a:hover {
+                text-decoration: none;
+                color: inherit;
+            }
+
             header>div>div
             {
                 position: absolute;
@@ -77,14 +87,30 @@
             nav ol
             {
                 list-style-type: none;
-                font-size: 0.8em;
                 margin: 0;
                 padding: 0;
-                margin-top: 2.0em;
             }
 
-            nav ol li {
+            nav li>ol
+            {
+                margin-top: 0.4em;
+                margin-left: 3.0em;
+            }
+
+            nav>ol
+            {
+                margin-top: 2.0em;
+                font-size: 0.8em;
+            }
+
+            nav>ol>li
+            {
                 line-height: 1.6em;
+            }
+
+            .collapsed, .hidden
+            {
+                display: none;
             }
 
         </style>
@@ -94,7 +120,7 @@
         <header>
             <div>
                 <h1>
-                    Kimochi
+                    <a href="/">Kimochi</a>
                 </h1>
 
                 <div>

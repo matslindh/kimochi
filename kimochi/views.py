@@ -135,6 +135,17 @@ def site_page(request):
 
             page_section.gallery = gallery
 
+    if request.POST and 'command' in request.POST:
+        if request.POST['command'] == 'page_section_create':
+            page_section = PageSection(page=page, type='gallery')
+
+            DBSession.add(page_section)
+            DBSession.flush()
+
+            return HTTPSeeOther(
+                location=request.route_url('site_page', site_key=site.key, page_id=page.id) + '#page-section-' + str(page_section.id)
+            )
+
     return {
         'site': site,
         'page': page,
