@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        <textarea style="clear: both; height: 300px; margin-top: 2.0em;" name="section_content">${section.content}</textarea>
+        <textarea style="clear: both; height: 300px; margin-top: 2.0em;" name="section_content">${section.content if section.content else ''}</textarea>
         <input type="submit" value="Save" class="btn btn-default" style="margin-top: 0.5em; margin-bottom: 3.0em; float: right;"/>
     </form>
 
@@ -58,6 +58,8 @@
 
         $(".menu-section-link").removeClass('active');
         $("#menu-page-section-id-" + section_id).addClass('active');
+
+        history.replaceState(null, "", "#page-section-" + section_id);
     }
 
     $(document).ready(function () {
