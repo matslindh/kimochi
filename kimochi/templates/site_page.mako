@@ -59,6 +59,12 @@
     });
 
     var activate_section = function (section_id) {
+        // return early if the section already is the active section
+        if ($("#page-section-" + section_id).is(':visible'))
+        {
+            return;
+        }
+
         $(".page-section").hide(200);
         $(".activate-section, #page-section-" + section_id).show();
         update_section_type(section_id);
