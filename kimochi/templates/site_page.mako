@@ -1,4 +1,4 @@
-<%inherit file="site_base.mako" />
+<%inherit file="site_page_base.mako" />
 
 <script src="//tinymce.cachefly.net/4.2/tinymce.min.js"></script>
 
