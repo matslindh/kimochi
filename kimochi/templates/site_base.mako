@@ -2,6 +2,9 @@
 
 <h2>
     ${site.name}
+
+    <a href="${request.route_url('site_pages', site_key=site.key)}" class="btn-lg">Pages</a>
+    <a href="${request.route_url('site_galleries', site_key=site.key)}"  class="btn-primary btn-lg">Galleries</a>
 </h2>
 
 <div class="row">
@@ -45,7 +48,7 @@
     <div class="col-md-8">
         ${next.body()}
     </div>
-</nav>
+</div>
 
 <script type="text/javascript">
     $("#add-new-page-link").click(function () {

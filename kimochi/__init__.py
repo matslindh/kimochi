@@ -50,6 +50,8 @@ def main(global_config, **settings):
     config.add_route('profile', '/profile')
     config.add_route('sites', '/sites')
     config.add_route('site', '/sites/{site_key}')
+    config.add_route('site_gallery', '/sites/{site_key}/gallery/{gallery_id}')
+    config.add_route('site_galleries', '/sites/{site_key}/galleries')
     config.add_route('site_page', '/sites/{site_key}/pages/{page_id}')
     config.add_route('site_pages', '/sites/{site_key}/pages')
     config.add_route('login', '/login')
