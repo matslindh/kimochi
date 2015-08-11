@@ -18,11 +18,11 @@ from pyramid.security import (
 )
 
 
-@view_config(route_name='index', renderer='templates/index.mako')
+@view_config(route_name='index', renderer='kimochi:templates/index.mako')
 def index(request):
     return {}
 
-@view_config(route_name='sites', request_method='POST', renderer='templates/index.mako')
+@view_config(route_name='sites', request_method='POST', renderer='kimochi:templates/index.mako')
 def site_add(request):
     if 'site_name' not in request.POST or len(request.POST['site_name'].strip()) < 1:
         raise HTTPBadRequest
@@ -36,7 +36,7 @@ def site_add(request):
 
     return HTTPSeeOther(location=request.route_url('site', site_key=site.key))
 
-@view_config(route_name='site', renderer='templates/site.mako')
+@view_config(route_name='site', renderer='kimochi:templates/site.mako')
 def site(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
 

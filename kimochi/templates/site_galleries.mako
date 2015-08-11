@@ -1,0 +1,1 @@
+<%inherit file="site_gallery_base.mako" />

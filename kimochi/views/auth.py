@@ -18,8 +18,8 @@ from pyramid.security import (
 )
 
 
-@view_config(route_name='login', renderer='templates/login.mako')
-@forbidden_view_config(renderer='templates/login.mako')
+@view_config(route_name='login', renderer='kimochi:templates/login.mako')
+@forbidden_view_config(renderer='kimochi:templates/login.mako')
 def login(request):
     if 'user_id' in request.session:
         return HTTPFound(location=request.route_url('index'))
