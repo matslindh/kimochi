@@ -51,4 +51,7 @@ docs/_build/
 
 # PyCharm
 .idea/
+
+# kimochi
 kimochi.sqlite
+development_local.ini
