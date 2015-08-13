@@ -116,6 +116,18 @@ class Image(Base):
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=False, index=True)
     gallery = relationship('Gallery', backref='images')
 
+    def __json__(self, request):
+        data = {
+            'imbo_id': self.imbo_id,
+        }
+
+        if self.imbo_id:
+            data['preview'] = {
+                '400x200': str(request.imbo.image_url(self.imbo_id).max_size(max_width=400, max_height=200)),
+            }
+
+        return data
+
 UserSiteTable = Table('users_sites', Base.metadata,
     Column('user_id', Integer, ForeignKey('users.id'), nullable=False, index=True, primary_key=True),
     Column('site_id', Integer, ForeignKey('sites.id'), nullable=False, index=True, primary_key=True)

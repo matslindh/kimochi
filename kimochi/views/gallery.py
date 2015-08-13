@@ -4,12 +4,15 @@ from pyramid.view import (
 
 from pyramid.httpexceptions import (
     HTTPFound,
+    HTTPNotFound,
     HTTPSeeOther,
+    HTTPBadRequest,
 )
 
 from ..models import (
     Site,
     Gallery,
+    Image,
     DBSession,
     )
 
@@ -41,9 +44,31 @@ def site_gallery(request):
     gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
 
     if not gallery:
-        return HTTPFound(location=request.route_url('site', site_key=site.key))
+        return HTTPNotFound()
 
     return {
         'site': site,
         'gallery': gallery,
     }
+
+@view_config(route_name='site_gallery_images', request_method='POST', renderer='json')
+def site_gallery_images(request):
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
+
+    if not gallery:
+        return HTTPNotFound()
+
+    if 'file' not in request.POST or not getattr(request.POST['file'], 'file'):
+        return HTTPBadRequest()
+
+    result = request.imbo.add_image_from_string(request.POST['file'].file)
+
+    if not result or 'imageIdentifier' not in result:
+        return HTTPBadRequest()
+
+    image = Image(gallery=gallery, imbo_id=result['imageIdentifier'])
+    DBSession.add(image)
+    DBSession.flush()
+
+    return image

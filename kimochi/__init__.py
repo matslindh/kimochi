@@ -18,6 +18,8 @@ from .models import (
 from pyramid.events import subscriber
 from pyramid.events import BeforeRender
 
+import imboclient.client as imboclient
+
 @subscriber(BeforeRender)
 def add_user(event):
     event['user'] = None
@@ -35,6 +37,9 @@ def main(global_config, **settings):
     authentication_policy = SessionAuthenticationPolicy()
     authorization_policy = ACLAuthorizationPolicy()
 
+    def get_imbo(request):
+        return imboclient.Client((settings['imbo.host'], ), settings['imbo.public_key'], settings['imbo.private_key'])
+
     config = Configurator(
         settings=settings,
         root_factory=RootFactory,
@@ -51,10 +56,13 @@ def main(global_config, **settings):
     config.add_route('sites', '/sites')
     config.add_route('site', '/sites/{site_key}')
     config.add_route('site_gallery', '/sites/{site_key}/gallery/{gallery_id}')
+    config.add_route('site_gallery_images', '/sites/{site_key}/gallery/{gallery_id}/images')
     config.add_route('site_galleries', '/sites/{site_key}/galleries')
     config.add_route('site_page', '/sites/{site_key}/pages/{page_id}')
     config.add_route('site_pages', '/sites/{site_key}/pages')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
+
+    config.add_request_method(get_imbo, 'imbo', reify=True)
     config.scan()
     return config.make_wsgi_app()

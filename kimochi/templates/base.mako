@@ -118,6 +118,19 @@
                 display: none;
             }
 
+            #gallery-file-uploader
+            {
+                margin-top: 1.0em;
+                padding: 2.0em;
+                text-align: center;
+                border: 1px dotted #ccc;
+            }
+
+            .dz-message
+            {
+                color: #aaa;
+                font-size: 1.4em;
+            }
         </style>
         <title>Kimochi</title>
     </head>
