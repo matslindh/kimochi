@@ -115,7 +115,7 @@ class Image(Base):
     description = Column(Text(length=65536), nullable=True)
     customer = Column(Text(length=140), nullable=True)
     link = Column(Text(length=200), nullable=True)
-    link_text = Column(Text(Length=140), nullable=True)
+    link_text = Column(Text(length=140), nullable=True)
 
     deleted = Column(Boolean, default=False)
 
@@ -125,6 +125,11 @@ class Image(Base):
     def __json__(self, request):
         data = {
             'imbo_id': self.imbo_id,
+            'title': self.title,
+            'description': self.description,
+            'customer': self.customer,
+            'link': self.link,
+            'link_text': self.link_text,
         }
 
         if self.imbo_id:
