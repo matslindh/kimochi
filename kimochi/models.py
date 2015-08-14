@@ -111,6 +111,12 @@ class Image(Base):
     imbo_id = Column(Text(length=80))
     order = Column(Integer, default=epoch)
 
+    title = Column(Text(length=140), nullable=True)
+    description = Column(Text(length=65536), nullable=True)
+    customer = Column(Text(length=140), nullable=True)
+    link = Column(Text(length=200), nullable=True)
+    link_text = Column(Text(Length=140), nullable=True)
+
     deleted = Column(Boolean, default=False)
 
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=False, index=True)
