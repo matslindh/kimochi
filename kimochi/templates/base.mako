@@ -6,6 +6,7 @@
         <link href='http://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.2.1/Sortable.min.js"></script>
         <style type="text/css">
             body {
                 background: white;
@@ -130,6 +131,56 @@
             {
                 color: #aaa;
                 font-size: 1.4em;
+            }
+
+            .sort-handle:hover
+            {
+                cursor: move;
+            }
+
+            .sort-handle
+            {
+                float: left;
+                width: 30px;
+                color: #888;
+                margin-right: 1.0em;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .sort-ghost
+            {
+                opacity: 0.25;
+                border-right: 1px dotted #999;
+            }
+
+            .image-description
+            {
+                margin-left: 325px;
+            }
+
+            ol.listed
+            {
+                margin: 0;
+                padding: 0;
+            }
+
+            ol.listed li
+            {
+                padding-bottom: 10px;
+                padding-top: 10px;
+                border-bottom: 1px dotted #ddd;
+            }
+
+            ol.listed li div.action-row
+            {
+                float: right;
+                color: #888;
+            }
+
+            ol.listed li div.action-row span:hover
+            {
+                color: black;
             }
         </style>
         <title>Kimochi</title>

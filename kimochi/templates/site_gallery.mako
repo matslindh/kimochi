@@ -7,12 +7,18 @@
 </h3>
 
 % if gallery.images:
-    <ol>
+    <ol id="gallery-images" class="listed">
         % for image in gallery.images:
             <li style="margin-bottom: 1.0em; min-height: 100px; overflow: hidden; list-style-type: none;">
-                <img src="${request.imbo.image_url(image.imbo_id).max_size(250, 150)}" alt="" style="float: left;" />
+                <div class="sort-handle">☰</div>
 
-                <div style="margin-left: 275px;">
+                <img src="${request.imbo.image_url(image.imbo_id).max_size(150, 100)}" alt="" style="float: left;" />
+
+                <div class="action-row">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </div>
+
+                <div class="image-description">
                     <h4 style="margin-top: 0;">
                         No title provided
                     </h4>
@@ -34,3 +40,11 @@
         Drop images here to add them to the gallery
     </div>
 </form>
+
+<script type="text/javascript">
+    var sortable = new Sortable(document.getElementById('gallery-images'), {
+        handle: '.sort-handle',
+        ghostClass: 'sort-ghost',
+        animation: 100
+    });
+</script>
