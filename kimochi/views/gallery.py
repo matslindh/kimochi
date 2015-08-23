@@ -7,6 +7,7 @@ from pyramid.httpexceptions import (
     HTTPNotFound,
     HTTPSeeOther,
     HTTPBadRequest,
+    HTTPNoContent,
 )
 
 from ..models import (
@@ -59,16 +60,29 @@ def site_gallery_images(request):
     if not gallery:
         return HTTPNotFound()
 
-    if 'file' not in request.POST or not getattr(request.POST['file'], 'file'):
-        return HTTPBadRequest()
+    if 's' in request.POST:
+        sequence = request.POST.getall('s')
+        image_ids = {image.id: image for image in gallery.images}
 
-    result = request.imbo.add_image_from_string(request.POST['file'].file)
+        for id in sequence:
+            if id not in image_ids:
+                return HTTPBadRequest()
 
-    if not result or 'imageIdentifier' not in result:
-        return HTTPBadRequest()
+        for (idx, id) in sequence:
+            image_ids[id].order = idx + 1
 
-    image = Image(gallery=gallery, imbo_id=result['imageIdentifier'])
-    DBSession.add(image)
-    DBSession.flush()
+        return HTTPNoContent()
 
-    return image
+    if 'file' in request.POST and getattr(request.POST['file'], 'file'):
+        result = request.imbo.add_image_from_string(request.POST['file'].file)
+
+        if not result or 'imageIdentifier' not in result:
+            return HTTPBadRequest()
+
+        image = Image(gallery=gallery, imbo_id=result['imageIdentifier'])
+        DBSession.add(image)
+        DBSession.flush()
+
+        return image
+
+    return HTTPBadRequest()
