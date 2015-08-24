@@ -100,6 +100,9 @@ class Gallery(Base):
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
     site = relationship('Site', backref='galleries')
 
+    images = relationship('Image', backref='gallery', order_by="Image.order")
+
+
     @classmethod
     def get_from_site_id_and_gallery_id(cls, site_id, gallery_id):
         return DBSession.query(cls).filter(cls.site_id == site_id, cls.id == gallery_id).first()
@@ -120,7 +123,6 @@ class Image(Base):
     deleted = Column(Boolean, default=False)
 
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=False, index=True)
-    gallery = relationship('Gallery', backref='images')
 
     def __json__(self, request):
         data = {

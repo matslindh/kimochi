@@ -60,15 +60,15 @@ def site_gallery_images(request):
     if not gallery:
         return HTTPNotFound()
 
-    if 's' in request.POST:
-        sequence = request.POST.getall('s')
+    if 's[]' in request.POST:
+        sequence = [int(id) for id in request.POST.getall('s[]')]
         image_ids = {image.id: image for image in gallery.images}
 
         for id in sequence:
             if id not in image_ids:
                 return HTTPBadRequest()
 
-        for (idx, id) in sequence:
+        for idx, id in enumerate(sequence):
             image_ids[id].order = idx + 1
 
         return HTTPNoContent()
