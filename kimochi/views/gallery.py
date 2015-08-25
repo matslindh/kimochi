@@ -86,3 +86,22 @@ def site_gallery_images(request):
         return image
 
     return HTTPBadRequest()
+
+@view_config(route_name='site_gallery_image', renderer='kimochi:templates/site_gallery_image.mako')
+def site_gallery_images(request):
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
+
+    if not gallery:
+        return HTTPNotFound()
+
+    image = Image.get_from_gallery_id_and_image_id(gallery.id, request.matchdict['image_id'])
+
+    if not image:
+        return HTTPNotFound()
+
+    return {
+        'site': site,
+        'gallery': gallery,
+        'image': image,
+    }
