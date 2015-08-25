@@ -12,6 +12,7 @@
         <script type="text/javascript" src="${request.static_url('kimochi:static/utilities.js')}"></script>
 
         <link rel="stylesheet" href="${request.static_url('kimochi:static/kimochi.css')}">
+
         <title>Kimochi</title>
     </head>
     <body>

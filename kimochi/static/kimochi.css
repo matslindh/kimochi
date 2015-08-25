@@ -38,8 +38,6 @@ header>div {
     position: relative;
 }
 
-
-
 #container {
     width: 1000px;
     margin: auto;
@@ -155,20 +153,41 @@ ol.listed
     padding: 0;
 }
 
-ol.listed li
+ol.listed>li
 {
-    padding-bottom: 10px;
+    padding: 0 10px;
     padding-top: 10px;
     border-bottom: 1px dotted #ddd;
+    margin-bottom: 1.0em;
+    min-height: 100px;
+    overflow: hidden;
+    list-style-type: none;
 }
 
-ol.listed li div.action-row
+ol.listed>li div.action-row
 {
     float: right;
     color: #888;
 }
 
-ol.listed li div.action-row span:hover
+ol.listed>li div.action-row span:hover
 {
     color: black;
+}
+
+ol.listed>li h4
+{
+    margin-top: 0;
+    margin-right: 32px;
+}
+
+ol.listed>li p
+{
+    font-size: 0.8em;
+    margin-right: 32px;
+}
+
+.content-not-provided
+{
+    color: #888;
 }
