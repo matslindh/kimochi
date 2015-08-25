@@ -28,7 +28,7 @@ setup(name='kimochi',
       version='0.0',
       description='kimochi',
       long_description=README + '\n\n' + CHANGES,
-      dependency_links = ['https://github.com/imbo/imboclient-python/archive/python3.zip#egg=imboclient-python'],
+      dependency_links = ['https://github.com/imbo/imboclient-python/archive/master.zip#egg=imboclient-python'],
       classifiers=[
         "Programming Language :: Python",
         "Framework :: Pyramid",
