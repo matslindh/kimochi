@@ -12,21 +12,21 @@
 % if gallery.images:
     <ol id="gallery-images" class="listed">
         % for image in gallery.images:
-            <li style="margin-bottom: 1.0em; min-height: 100px; overflow: hidden; list-style-type: none;" data-image-id="${image.id}">
+            <li data-image-id="${image.id}">
                 <div class="sort-handle">☰</div>
 
                 <img src="${request.imbo.image_url(image.imbo_id).max_size(150, 100)}" alt="" style="float: left;" />
 
                 <div class="action-row">
-                    <span class="glyphicon glyphicon-pencil"></span>
+                    <a href="${request.current_route_url(_route_name='site_gallery_image', image_id=image.id)}"><span class="glyphicon glyphicon-pencil"></span></a>
                 </div>
 
                 <div class="image-description">
-                    <h4 style="margin-top: 0;">
-                        No title provided
+                    <h4 class="${'content-not-provided' if not image.title else ''}">
+                        ${image.title if image.title else 'Untitled'}
                     </h4>
-                    <p>
-                        No description
+                    <p class="${'content-not-provided' if not image.description else ''}">
+                        ${image.description if image.description else 'No description'}
                     </p>
                 </div>
             </li>
@@ -36,7 +36,7 @@
     Gallery is empty. Add some images!
 % endif
 
-<form action="${request.route_url('site_gallery_images', site_key=site.key, gallery_id=gallery.id)}" class="dropzone" id="gallery-file-uploader">
+<form action="${request.current_route_url(_route_name='site_gallery_images')}" class="dropzone" id="gallery-file-uploader">
     <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
 
     <div class="dz-message">
