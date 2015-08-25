@@ -1,7 +1,5 @@
 <%inherit file="site_gallery_base.mako" />
 
-<script type="text/javascript" src="${request.static_url('kimochi:static/dropzone.js')}"></script>
-
 <h3 class="top" style="border-bottom: 1px solid #ccc; padding-bottom: 16px;">
     Gallery: ${gallery.name}
 
@@ -67,20 +65,7 @@
 
         console.log(ids);
         $.post("${request.current_route_url(_route_name='site_gallery_images')}", {s: ids}, function () {
-            $("#gallery-save-button").blur();
-
-            $("#gallery-save-button").animate({
-                backgroundColor: "#aaffaa",
-                borderColor: "#ccc",
-                color: "#000000",
-            }, 300, function () {
-                $(this).delay(1000).animate({
-                    backgroundColor: "#ffffff",
-                }, 300, function () {
-                    $(this).removeClass('btn-primary');
-                    $(this).removeAttr('style');
-                });
-            });
+            flash_button_ok($("#gallery-save-button"));
         });
         return false;
     };
