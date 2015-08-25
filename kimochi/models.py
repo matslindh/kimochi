@@ -141,6 +141,10 @@ class Image(Base):
 
         return data
 
+    @classmethod
+    def get_from_gallery_id_and_image_id(cls, gallery_id, image_id):
+        return DBSession.query(cls).filter(cls.gallery_id == gallery_id, cls.id == image_id).first()
+
 UserSiteTable = Table('users_sites', Base.metadata,
     Column('user_id', Integer, ForeignKey('users.id'), nullable=False, index=True, primary_key=True),
     Column('site_id', Integer, ForeignKey('sites.id'), nullable=False, index=True, primary_key=True)
