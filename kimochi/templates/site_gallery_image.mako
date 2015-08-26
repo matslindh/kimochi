@@ -14,11 +14,11 @@
 
         <div class="form-group">
             <label for="image-title-field">Title</label>
-            <input type="text" class="form-control" id="image-title-field" placeholder="Untitled image" value="${image.title if image.title else ''}" />
+            <input type="text" name="title" class="form-control" id="image-title-field" placeholder="Untitled image" value="${image.title if image.title else ''}" />
         </div>
         <div class="form-group">
             <label for="image-description-field">Description</label>
-            <textarea class="form-control" id="image-description-field" placeholder="Extended image description, if needed." rows="5">${image.description if image.description else ''}</textarea>
+            <textarea class="form-control" name="description" id="image-description-field" placeholder="Extended image description, if needed." rows="5">${image.description if image.description else ''}</textarea>
         </div>
 
         <input type="submit" id="gallery-save-button" value="Save" class="btn btn-primary" />

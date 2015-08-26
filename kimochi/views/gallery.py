@@ -100,6 +100,15 @@ def site_gallery_images(request):
     if not image:
         return HTTPNotFound()
 
+    if 'title' in request.POST:
+        image.title = request.POST['title']
+
+        if 'description' in request.POST:
+            image.description = request.POST['description']
+
+        request.session.flash("Image title and description was updated!")
+        return HTTPFound(location=request.current_route_url(_route_name='site_gallery'))
+
     return {
         'site': site,
         'gallery': gallery,

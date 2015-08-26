@@ -9,6 +9,12 @@
     </form>
 </h3>
 
+% if request.session.peek_flash():
+    % for message in request.session.pop_flash():
+        <div class="alert alert-success" role="alert">${message}</div>
+    % endfor
+% endif
+
 % if gallery.images:
     <ol id="gallery-images" class="listed">
         % for image in gallery.images:
