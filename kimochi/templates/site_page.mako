@@ -65,7 +65,7 @@
             return;
         }
 
-        $(".page-section").hide(200);
+        $(".page-section").slideUp(200);
         $(".activate-section, #page-section-" + section_id).show();
         update_section_type(section_id);
         $("#activate-section-" + section_id).hide();
@@ -81,7 +81,7 @@
         var type = root.find("input[name=section_type]:checked").val();
 
         root.find(".section-type-container").hide();
-        root.find(".section-type-" + type).show();
+        root.find(".section-type-" + type).slideDown(200);
     };
 
     $(document).ready(function () {
