@@ -73,6 +73,7 @@ h3.top
     margin-top: 0;
     border-bottom: 1px solid #ccc;
     padding-bottom: 0.2em;
+    overflow: hidden;
 }
 
 nav ol
