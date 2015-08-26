@@ -1,10 +1,10 @@
 <%inherit file="site_gallery_base.mako" />
 
-<h3 class="top" style="border-bottom: 1px solid #ccc; padding-bottom: 16px;">
+<h3 class="top">
     <a href="${request.current_route_url(_route_name='site_gallery')}">${gallery.name}</a> / ${image.title if image.title else 'Untitled image'}
 </h3>
 
-<section>
+<section class="image-details">
     <div>
         <img src="${request.imbo.image_url(image.imbo_id).max_size(656, 656)}" alt="Image preview" />
     </div>

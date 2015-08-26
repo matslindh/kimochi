@@ -71,6 +71,8 @@ form ul {
 h3.top
 {
     margin-top: 0;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.2em;
 }
 
 nav ol
@@ -190,4 +192,9 @@ ol.listed>li p
 .content-not-provided
 {
     color: #888;
+}
+
+section.image-details form
+{
+    margin-top: 1.0em;
 }

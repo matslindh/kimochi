@@ -1,6 +1,6 @@
 <%inherit file="site_gallery_base.mako" />
 
-<h3 class="top" style="border-bottom: 1px solid #ccc; padding-bottom: 16px;">
+<h3 class="top">
     Gallery: ${gallery.name}
 
     <form method="post" id="gallery-save"  style="float: right;">
