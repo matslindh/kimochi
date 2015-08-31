@@ -14,6 +14,7 @@ from ..models import (
     Site,
     Gallery,
     Image,
+    PageSection,
     DBSession,
     )
 
@@ -107,6 +108,14 @@ def site_gallery_images(request):
             image.description = request.POST['description']
 
         request.session.flash("Image title and description was updated!")
+
+        if 'return_page_section_id' in request.GET:
+            section = PageSection.get_from_id(request.GET['return_page_section_id'])
+
+            if section and section.page.site_id == gallery.site_id:
+                url = request.current_route_url(_route_name='site_page', page_id=section.page_id)+ '#page-section-' + str(section.id)
+                return HTTPFound(location=url)
+
         return HTTPFound(location=request.current_route_url(_route_name='site_gallery'))
 
     return {

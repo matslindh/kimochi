@@ -199,3 +199,16 @@ section.image-details form
 {
     margin-top: 1.0em;
 }
+
+.placeholder
+{
+    color: #888;
+    border: 1px dotted #888;
+    text-align: center;
+    padding: 2.0em;
+}
+
+.container-fluid
+{
+    padding: 0;
+}

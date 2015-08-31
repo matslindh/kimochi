@@ -88,6 +88,10 @@ class PageSection(Base):
         return DBSession.query(cls).filter(cls.page_id == page_id, cls.id == page_section_id, cls.deleted == False).first()
 
     @classmethod
+    def get_from_id(cls, section_id):
+        return DBSession.query(cls).filter(cls.id == section_id, cls.deleted == False).first()
+
+    @classmethod
     def is_valid_type(cls, page_type):
         return page_type in ('text', 'gallery', )
 
