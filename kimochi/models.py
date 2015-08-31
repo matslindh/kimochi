@@ -102,7 +102,6 @@ class Gallery(Base):
 
     images = relationship('Image', backref='gallery', order_by="Image.order")
 
-
     @classmethod
     def get_from_site_id_and_gallery_id(cls, site_id, gallery_id):
         return DBSession.query(cls).filter(cls.site_id == site_id, cls.id == gallery_id).first()
