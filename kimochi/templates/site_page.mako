@@ -3,6 +3,13 @@
 <script src="//tinymce.cachefly.net/4.2/tinymce.min.js"></script>
 
 <h3 class="top" style="border-bottom: 1px solid #ccc; padding-bottom: 16px;">
+    <form method="post">
+        <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
+        <input type="hidden" name="command" value="toggle_published" />
+
+        <input type="submit" value="${'Published and live' if page.published else 'Not published'}" class="btn ${'btn-primary' if page.published else 'btn-default active'} btn-lg" style="float: right; margin-left: 2.0em;" />
+    </form>
+
     Editing Page: ${page.name}
 </h3>
 
@@ -47,23 +54,29 @@
             % else:
                 <h4>Select a gallery</h4>
 
-                % for gallery in site.galleries:
-                    <div class="col-md-4">
-                        <a href="#" class="gallery-picker" data-gallery-id="${gallery.id}">
-                            <h5>${gallery.name}</h5>
+                % if site.galleries:
+                    % for gallery in site.galleries:
+                        <div class="col-md-4">
+                            <a href="#" class="gallery-picker" data-gallery-id="${gallery.id}">
+                                <h5>${gallery.name}</h5>
 
-                            % if gallery.images:
-                                <div>
-                                    <img src="${request.imbo.image_url(gallery.images[0].imbo_id).max_size(150, 150)}" alt="${gallery.images[0].title if gallery.images[0].title else ''}" />
-                                </div>
-                            % else:
-                                <div class="placeholder">
-                                    Empty gallery
-                                </div>
-                            % endif
-                        </a>
+                                % if gallery.images:
+                                    <div>
+                                        <img src="${request.imbo.image_url(gallery.images[0].imbo_id).max_size(150, 150)}" alt="${gallery.images[0].title if gallery.images[0].title else ''}" />
+                                    </div>
+                                % else:
+                                    <div class="placeholder">
+                                        Empty gallery
+                                    </div>
+                                % endif
+                            </a>
+                        </div>
+                    % endfor
+                % else:
+                    <div class="placeholder lg">
+                        You haven't added any galleries for this site yet. <a href="${request.route_url('site_galleries', site_key=site.key)}">Add galleries</a>
                     </div>
-                % endfor
+                % endif
             % endif
         </div>
 
