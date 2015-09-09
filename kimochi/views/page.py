@@ -78,7 +78,14 @@ def site_page(request):
             page_section.gallery = gallery
 
     if request.POST and 'command' in request.POST:
-        if request.POST['command'] == 'page_section_create':
+        if request.POST['command'] == 'toggle_published':
+            page.published = not page.published
+
+            return HTTPSeeOther(
+                location=request.current_route_url()
+            )
+
+        elif request.POST['command'] == 'page_section_create':
             page_section = PageSection(page=page, type='gallery')
 
             DBSession.add(page_section)
