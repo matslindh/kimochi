@@ -3,6 +3,7 @@ from pyramid.authentication import SessionAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.security import (
     Authenticated,
+    NO_PERMISSION_REQUIRED,
     authenticated_userid,
 )
 
@@ -13,6 +14,7 @@ from .models import (
     Base,
     User,
     RootFactory,
+    APIRootFactory,
     )
 
 from pyramid.events import subscriber
@@ -48,6 +50,14 @@ def main(global_config, **settings):
         default_permission=Authenticated
     )
 
+    def api_configuration(config):
+        config.add_route('api_site_image', '/sites/{site_key}/images/{image_id}',
+                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
+        config.add_route('api_site_gallery', '/sites/{site_key}/galleries/{gallery_id}',
+                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
+        config.add_route('api_site_page', '/sites/{site_key}/pages/{page_id}',
+                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
+
     config.include('pyramid_beaker')
     config.include('pyramid_mako')
     config.add_static_view('static', 'static', cache_max_age=3600)
@@ -63,6 +73,9 @@ def main(global_config, **settings):
     config.add_route('site_pages', '/sites/{site_key}/pages')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
+
+    # include API configuration under /api
+    config.include(api_configuration, route_prefix='/api')
 
     config.add_request_method(get_imbo, 'imbo', reify=True)
     config.scan()

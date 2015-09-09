@@ -22,7 +22,7 @@ from sqlalchemy_utils.types.password import (
 
 from pyramid.security import (
     Allow,
-    Deny,
+    ALL_PERMISSIONS,
     Authenticated,
     Everyone,
 )
@@ -44,6 +44,7 @@ class Page(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Text(length=40))
+    published = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
 
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
@@ -182,6 +183,19 @@ class Site(Base):
 
         raise NoAccessException
 
+    @classmethod
+    def get_from_key_and_api_key(cls, key, api_key):
+        site = cls.get_from_key(key)
+
+        if not site:
+            raise NotFoundException
+
+        for api_key_obj in site.api_keys:
+            if api_key_obj.key == api_key:
+                return site
+
+        raise NoAccessException
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -231,6 +245,13 @@ class RootFactory:
     def __init__(self, request):
         pass
 
+class APIRootFactory:
+    __acl__ = [
+        (Allow, Everyone, 'api')
+    ]
+
+    def __init__(self, request):
+        pass
 
 class NotFoundException(BaseException):
     pass
