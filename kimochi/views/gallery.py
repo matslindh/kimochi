@@ -89,7 +89,7 @@ def site_gallery_images(request):
     return HTTPBadRequest()
 
 @view_config(route_name='site_gallery_image', renderer='kimochi:templates/site_gallery_image.mako')
-def site_gallery_images(request):
+def site_gallery_image(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
     gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
 
