@@ -32,6 +32,8 @@ from zope.sqlalchemy import ZopeTransactionExtension
 import calendar
 import time
 import uuid
+import random
+import string
 
 def epoch():
     return calendar.timegm(time.gmtime())
@@ -49,6 +51,13 @@ class Page(Base):
 
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
     site = relationship('Site')
+
+    def __json__(self, request):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'sections': self.get_sections_active(),
+        }
 
     @classmethod
     def get_active_from_site_id(cls, site_id):
@@ -80,6 +89,13 @@ class PageSection(Base):
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=True)
     gallery = relationship('Gallery')
 
+    def __json__(self, request):
+        return {
+            'type': self.type,
+            'content': self.content,
+            'gallery': self.gallery,
+        }
+
     @classmethod
     def get_active_from_page_id(cls, page_id):
         return DBSession.query(cls).filter(cls.page_id == page_id, cls.deleted == False).order_by('order').all()
@@ -106,6 +122,12 @@ class Gallery(Base):
     site = relationship('Site', backref='galleries')
 
     images = relationship('Image', backref='gallery', order_by="Image.order")
+
+    def __json__(self, request):
+        return {
+            'name': self.name,
+            'images': self.images,
+        }
 
     @classmethod
     def get_from_site_id_and_gallery_id(cls, site_id, gallery_id):
@@ -163,6 +185,25 @@ class Site(Base):
 
     pages = relationship('Page')
 
+    def __json__(self, request):
+        pages = []
+
+        for page in self.pages_active():
+            pages.append({
+                'id': page.id,
+                'name': page.name,
+                'slug': None,
+            })
+
+        return {
+            'name': self.name,
+            'key': self.key,
+            'pages': pages,
+        }
+
+    def api_key_generate(self):
+        return SiteAPIKey.generate(self.id)
+
     def pages_active(self):
         return Page.get_active_from_site_id(self.id)
 
@@ -195,6 +236,33 @@ class Site(Base):
                 return site
 
         raise NoAccessException
+
+class SiteAPIKey(Base):
+    __tablename__  = 'sites_api_keys'
+    __key_length__ = 32
+
+    id = Column(Integer, primary_key=True)
+    key = Column(Text(length=__key_length__), unique=True, default=lambda: uuid.uuid4().hex)
+
+    site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
+    site = relationship('Site', backref='api_keys')
+
+    @classmethod
+    def generate(cls, site_id):
+        key = ''
+        valid = string.ascii_letters + string.digits
+        rand = random.SystemRandom()
+
+        while not key or DBSession.query(SiteAPIKey).filter(SiteAPIKey.key == key).first():
+            key = ''
+
+            for d in range(0, cls.__key_length__):
+                key += rand.choice(valid)
+
+        api_key = SiteAPIKey(site_id=site_id, key=key)
+        DBSession.add(api_key)
+
+        return api_key
 
 class User(Base):
     __tablename__ = 'users'
