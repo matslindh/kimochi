@@ -125,6 +125,7 @@ class Gallery(Base):
 
     def __json__(self, request):
         return {
+            'id': self.id,
             'name': self.name,
             'images': self.images,
         }
@@ -152,6 +153,7 @@ class Image(Base):
 
     def __json__(self, request):
         data = {
+            'id': self.id,
             'imbo_id': self.imbo_id,
             'title': self.title,
             'description': self.description,
@@ -163,6 +165,10 @@ class Image(Base):
         if self.imbo_id:
             data['preview'] = {
                 '400x200': str(request.imbo.image_url(self.imbo_id).max_size(max_width=400, max_height=200)),
+            }
+
+            data['source'] = {
+                '1280': str(request.imbo.image_url(self.imbo_id).max_size(max_width=1280))
             }
 
         return data
