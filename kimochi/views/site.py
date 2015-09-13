@@ -40,6 +40,16 @@ def site_add(request):
 def site(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
 
+    if 'command' in request.POST:
+        if request.POST['command'] == 'generate_api_key' and len(site.api_keys) < 20:
+            key = site.api_key_generate()
+            request.session.flash("A new API key has been generated!")
+            DBSession.flush()
+
+            return HTTPSeeOther(
+                location=request.current_route_url() + '#key_' + str(key.id)
+            )
+
     return {
         'site': site,
     }
