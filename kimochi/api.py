@@ -12,6 +12,8 @@ from pyramid.httpexceptions import (
 from .models import (
     Site,
     Page,
+    Gallery,
+    Image,
     NotFoundException,
     NoAccessException,
 )
@@ -47,7 +49,31 @@ class SiteAPI:
 
     @view_config(route_name='api_site_gallery')
     def gallery(self):
-        return {'gallery': 'beep boop'}
+        gallery = self._current_gallery()
 
-    def image(self):
-        return {'image': 'beepel boopel'}
+        return {
+            'site': self.site,
+            'gallery': gallery,
+        }
+
+    @view_config(route_name='api_site_gallery_image')
+    def gallery_image(self):
+        gallery = self._current_gallery()
+        image = Image.get_from_gallery_id_and_image_id(self.request.matchdict['gallery_id'], self.request.matchdict['image_id'])
+
+        if not image:
+            raise HTTPNotFound
+
+        return {
+            'site': self.site,
+            'gallery': gallery,
+            'image': image,
+        }
+
+    def _current_gallery(self):
+        gallery = Gallery.get_from_site_id_and_gallery_id(self.site.id, self.request.matchdict['gallery_id'])
+
+        if not gallery:
+            raise HTTPNotFound
+
+        return gallery

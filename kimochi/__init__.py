@@ -55,6 +55,8 @@ def main(global_config, **settings):
                          permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
         config.add_route('api_site_gallery', '/sites/{site_key}/galleries/{gallery_id}',
                          permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
+        config.add_route('api_site_gallery_image', '/sites/{site_key}/galleries/{gallery_id}/image/{image_id}',
+                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
         config.add_route('api_site_page', '/sites/{site_key}/pages/{page_id}',
                          permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
 
