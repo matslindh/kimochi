@@ -39,6 +39,9 @@ def main(argv=sys.argv):
     Base.metadata.create_all(engine)
 
     with transaction.manager:
-        DBSession.add(User(email='test@example.com', password='test', admin=True))
-        DBSession.add(Site(name='asd', key='80d621df066348e5938a469730ae0cab'))
+        user = User(email='test@example.com', password='test', admin=True)
+        DBSession.add(user)
+        site = Site(name='asd', key='80d621df066348e5938a469730ae0cab')
+        DBSession.add(site)
         DBSession.add(SiteAPIKey(site_id=1, key='GIKfxIcIHPbM0uX9PrQ1To29Pb2on0pa'))
+        site.users.append(user)
