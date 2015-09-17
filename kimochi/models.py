@@ -62,6 +62,7 @@ class Page(Base):
         return {
             'id': self.id,
             'name': self.name,
+            'slug': self.slug,
             'sections': self.get_sections_active(),
         }
 
@@ -71,8 +72,8 @@ class Page(Base):
         return name
 
     @classmethod
-    def get_active_from_site_id(cls, site_id):
-        return DBSession.query(cls).filter(cls.site_id == site_id, cls.deleted == False).all()
+    def get_published_from_site_id(cls, site_id):
+        return DBSession.query(cls).filter(cls.site_id == site_id, cls.published == True, cls.deleted == False).all()
 
     @classmethod
     def get_for_site_id_and_page_id(cls, site_id, page_id):
@@ -248,7 +249,7 @@ class Site(Base):
             pages.append({
                 'id': page.id,
                 'name': page.name,
-                'slug': None,
+                'slug': page.slug,
             })
 
         return {
@@ -275,7 +276,7 @@ class Site(Base):
         return Page.get_for_site_id_and_page_alias(self.id, 'index')
 
     def pages_active(self):
-        return Page.get_active_from_site_id(self.id)
+        return Page.get_published_from_site_id(self.id)
 
     def set_default_index_page(self, page):
         Page.remove_alias_for_site(self.id, 'index')
