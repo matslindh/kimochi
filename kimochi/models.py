@@ -34,6 +34,7 @@ import time
 import uuid
 import random
 import string
+import datetime
 
 def epoch():
     return calendar.timegm(time.gmtime())
@@ -67,11 +68,48 @@ class Page(Base):
     def get_for_site_id_and_page_id(cls, site_id, page_id):
         return DBSession.query(cls).filter(cls.site_id == site_id, cls.id == page_id, cls.deleted == False).first()
 
+    @classmethod
+    def get_for_site_id_and_page_alias(cls, site_id, alias):
+        return DBSession.query(cls).join(PageAlias).filter(cls.site_id == site_id, cls.deleted == False, PageAlias.alias == alias).first()
+
+    @classmethod
+    def get_for_site_id_and_page_id_or_alias(cls, site_id, page_lookup):
+        page = cls.get_for_site_id_and_page_id(site_id, page_lookup)
+
+        if page:
+            return page
+
+        return cls.get_for_site_id_and_page_alias(site_id, page_lookup)
+
+    @classmethod
+    def remove_alias_for_site(cls, site_id, alias):
+        for al in DBSession.query(Page, PageAlias).\
+                filter(PageAlias.page_id == Page.id, PageAlias.alias == alias, Page.site_id == site_id).\
+                all():
+            DBSession.delete(al[1])
+
+    def add_alias(self, alias):
+        pa = PageAlias()
+        pa.alias = alias
+        pa.page = self
+
+        DBSession.add(pa)
+
     def get_sections_active(self):
         return PageSection.get_active_from_page_id(self.id)
 
     def get_page_section(self, page_section_id):
         return PageSection.get_from_page_id_and_page_section_id(self.id, page_section_id)
+
+class PageAlias(Base):
+    __tablename__ = 'pages_aliases'
+
+    id = Column(Integer, primary_key=True)
+    alias = Column(Text(length=40))
+
+    page_id = Column(Integer, ForeignKey('pages.id'), nullable=False, index=True)
+    page = relationship('Page', backref='aliases')
+
 
 class PageSection(Base):
     __tablename__ = 'pages_sections'
@@ -189,6 +227,8 @@ class Site(Base):
     name = Column(Text(length=40), unique=True)
     key = Column(Text(length=32), unique=True, default=lambda: uuid.uuid4().hex)
 
+    footer = Column(Text, nullable=True)
+
     pages = relationship('Page')
 
     def __json__(self, request):
@@ -205,13 +245,28 @@ class Site(Base):
             'name': self.name,
             'key': self.key,
             'pages': pages,
+            'footer': {
+                'text': replace_placeholders(self.footer) if self.footer else '',
+            }
         }
 
     def api_key_generate(self):
         return SiteAPIKey.generate(self.id)
 
+    def get_active_page(self, page_id):
+        for page in self.pages_active():
+            if page.id == page_id:
+                return page
+
+        return None
+
     def pages_active(self):
         return Page.get_active_from_site_id(self.id)
+
+    def set_default_index_page(self, page):
+        Page.remove_alias_for_site(self.id, 'index')
+        page.add_alias('index')
+        return True
 
     @classmethod
     def get_from_key(cls, key):
@@ -332,3 +387,6 @@ class NotFoundException(BaseException):
 
 class NoAccessException(BaseException):
     pass
+
+def replace_placeholders(text):
+    return text.replace("%YEAR%", str(datetime.datetime.now().year))
