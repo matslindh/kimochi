@@ -254,11 +254,15 @@ class Site(Base):
         return SiteAPIKey.generate(self.id)
 
     def get_active_page(self, page_id):
+        page_id = int(page_id)
         for page in self.pages_active():
             if page.id == page_id:
                 return page
 
         return None
+
+    def get_index_page(self):
+        return Page.get_for_site_id_and_page_alias(self.id, 'index')
 
     def pages_active(self):
         return Page.get_active_from_site_id(self.id)

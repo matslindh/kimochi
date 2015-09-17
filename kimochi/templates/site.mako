@@ -11,6 +11,32 @@
 % endif
 
 <h4 class="option-header">
+    Page to use as the site index
+</h4>
+
+<p class="option-description">
+    Select which page should be used as the default landing page for the site.
+</p>
+
+% if site.pages:
+    <form method="post">
+        <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
+
+        <select name="select_index_page" style="min-width: 14em;">
+            % for page in site.pages_active():
+                <option value="${page.id}" ${'selected="selected"' if index_page and page.id == index_page.id else '' | n}>${page.name}</option>
+            % endfor
+        </select>
+
+        <button class="btn">Update</button>
+    </form>
+% else:
+    <p class="option-placeholder">
+        There are no pages added for this site yet.
+    </p>
+% endif
+
+<h4 class="option-header">
     Footer Text
 </h4>
 

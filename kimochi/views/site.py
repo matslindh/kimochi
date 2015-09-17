@@ -52,12 +52,10 @@ def site_update(request):
 
     if 'footer' in request.POST:
         site.footer = request.POST['footer'].strip()
-
         request.session.flash("Footer text has been updated!")
 
     if 'select_index_page' in request.POST and site.get_active_page(request.POST['select_index_page']):
         site.set_default_index_page(site.get_active_page(request.POST['select_index_page']))
-
         request.session.flash("The default index page has been updated.")
 
     return HTTPSeeOther(
@@ -70,4 +68,5 @@ def site(request):
 
     return {
         'site': site,
+        'index_page': site.get_index_page(),
     }
