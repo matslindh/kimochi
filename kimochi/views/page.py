@@ -27,7 +27,7 @@ def site_pages(request):
 
     if 'page_name' in request.POST and len(request.POST['page_name'].strip()) > 0:
         first_page = not site.pages
-        page = Page(name=request.POST['page_name'].strip(), site=site, published=True)
+        page = Page(name=request.POST['page_name'].strip(), site=site, published=first_page)
         DBSession.add(page)
 
         page_section = PageSection(type='text', page=page, content='')
