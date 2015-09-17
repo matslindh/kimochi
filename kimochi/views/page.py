@@ -21,7 +21,7 @@ from pyramid.security import (
     authenticated_userid,
 )
 
-@view_config(route_name='site_pages', request_method='POST')
+@view_config(route_name='site_pages', request_method='POST', check_csrf=True)
 def site_pages(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
 
@@ -48,16 +48,15 @@ def site_pages_list(request):
         'site': site,
     }
 
-
-@view_config(route_name='site_page', renderer='kimochi:templates/site_page.mako')
-def site_page(request):
+@view_config(route_name='site_page', request_method='POST', renderer='kimochi:templates/site_page.mako', check_csrf=True)
+def site_page_update(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
     page = Page.get_for_site_id_and_page_id(site.id, request.matchdict['page_id'])
 
     if not page:
         return HTTPFound(location=request.route_url('site', site_key=site.key))
 
-    if request.POST and 'page_section_id' in request.POST:
+    if 'page_section_id' in request.POST:
         page_section = page.get_page_section(request.POST['page_section_id'])
 
         if not page_section:
@@ -77,6 +76,10 @@ def site_page(request):
 
             page_section.gallery = gallery
 
+        return HTTPSeeOther(
+            location=request.route_url('site_page', site_key=site.key, page_id=page.id) + '#page-section-' + str(page_section.id)
+        )
+
     if request.POST and 'command' in request.POST:
         if request.POST['command'] == 'toggle_published':
             page.published = not page.published
@@ -94,6 +97,16 @@ def site_page(request):
             return HTTPSeeOther(
                 location=request.route_url('site_page', site_key=site.key, page_id=page.id) + '#page-section-' + str(page_section.id)
             )
+
+    return {
+        'site': site,
+        'page': page,
+    }
+
+@view_config(route_name='site_page', renderer='kimochi:templates/site_page.mako')
+def site_page(request):
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    page = Page.get_for_site_id_and_page_id(site.id, request.matchdict['page_id'])
 
     return {
         'site': site,
