@@ -37,7 +37,7 @@ class SiteAPI:
 
     @view_config(route_name='api_site_page')
     def page(self):
-        page = Page.get_for_site_id_and_page_id(self.site.id, self.request.matchdict['page_id'])
+        page = Page.get_for_site_id_and_page_id_or_alias(self.site.id, self.request.matchdict['page_id'])
 
         if not page or not page.published:
             raise HTTPNotFound
