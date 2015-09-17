@@ -29,7 +29,7 @@ def site_pages(request):
         page = Page(name=request.POST['page_name'].strip(), site=site)
         DBSession.add(page)
 
-        page_section = PageSection(type='undecided', page=page)
+        page_section = PageSection(type='text', page=page)
         DBSession.add(page_section)
         DBSession.flush()
 
