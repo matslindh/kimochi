@@ -1,7 +1,7 @@
 <%inherit file="site_base.mako" />
 
 <h3>
-    Your site yes yes
+    Site Settings
 </h3>
 
 % if request.session.peek_flash():
