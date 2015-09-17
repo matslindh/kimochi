@@ -14,6 +14,7 @@ from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
     relationship,
+    validates,
     )
 
 from sqlalchemy_utils.types.password import (
@@ -28,6 +29,7 @@ from pyramid.security import (
 )
 
 from zope.sqlalchemy import ZopeTransactionExtension
+from slugify import slugify
 
 import calendar
 import time
@@ -47,6 +49,9 @@ class Page(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Text(length=40))
+
+    # populated by @validates rule for name
+    slug = Column(Text(length=80), nullable=True)
     published = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
 
@@ -59,6 +64,11 @@ class Page(Base):
             'name': self.name,
             'sections': self.get_sections_active(),
         }
+
+    @validates("name")
+    def _update_slug(self, key, name):
+        self.slug = slugify(name, only_ascii=True)
+        return name
 
     @classmethod
     def get_active_from_site_id(cls, site_id):

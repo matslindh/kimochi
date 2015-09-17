@@ -20,6 +20,7 @@ requires = [
     'SQLAlchemy',
     'sqlalchemy_utils',
     'transaction',
+    'unicode-slugify',
     'zope.sqlalchemy',
     'waitress',
     ]
