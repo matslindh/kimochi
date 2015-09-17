@@ -212,3 +212,13 @@ section.image-details form
 {
     padding: 0;
 }
+
+.option-description
+{
+    font-size: 0.8em;
+}
+
+h4.option-header
+{
+    margin-top: 2.0em;
+}
