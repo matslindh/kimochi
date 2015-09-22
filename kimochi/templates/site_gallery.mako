@@ -70,7 +70,10 @@
         });
 
         console.log(ids);
-        $.post("${request.current_route_url(_route_name='site_gallery_images')}", {s: ids}, function () {
+        $.post("${request.current_route_url(_route_name='site_gallery_images')}", {
+                's': ids,
+                'csrf_token': '${request.session.get_csrf_token()}'
+            }, function () {
             flash_button_ok($("#gallery-save-button"));
         });
         return false;
