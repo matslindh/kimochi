@@ -168,8 +168,13 @@
     });
 
     $(".gallery-picker").click(function () {
-        $.post("${request.current_route_url()}", {"section_gallery_id": $(this).data('gallery-id'), "page_section_id": get_section_id_from_element($(this))}, function (data) {
-            console.log(data);
-        });
+        $.post("${request.current_route_url()}", {
+                "section_gallery_id": $(this).data('gallery-id'),
+                "page_section_id": get_section_id_from_element($(this)),
+                "csrf_token": "${request.session.get_csrf_token()}",
+            }, function (data) {
+                console.log(data);
+            }
+        );
     });
 </script>
