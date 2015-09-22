@@ -172,9 +172,13 @@
                 "section_gallery_id": $(this).data('gallery-id'),
                 "page_section_id": get_section_id_from_element($(this)),
                 "csrf_token": "${request.session.get_csrf_token()}",
-            }, function (data) {
-                console.log(data);
-            }
+            }, function (el) {
+                return function (data) {
+                    $(el).addClass("selected");
+                };
+            }(this)
         );
+
+        return false;
     });
 </script>

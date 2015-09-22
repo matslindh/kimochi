@@ -222,3 +222,14 @@ h4.option-header
 {
     margin-top: 2.0em;
 }
+
+.selected
+{
+    background: #e8e8e8;
+}
+
+a.gallery-picker
+{
+    display: inline-block;
+    padding: 4px;
+}
