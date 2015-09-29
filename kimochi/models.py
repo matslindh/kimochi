@@ -200,6 +200,7 @@ class Image(Base):
     deleted = Column(Boolean, default=False)
 
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=False, index=True)
+    variations = relationship("ImageVariation")
 
     def __json__(self, request):
         data = {
@@ -226,6 +227,18 @@ class Image(Base):
     @classmethod
     def get_from_gallery_id_and_image_id(cls, gallery_id, image_id):
         return DBSession.query(cls).filter(cls.gallery_id == gallery_id, cls.id == image_id).first()
+
+class ImageVariation(Base):
+    __tablename__ = 'images_variations'
+
+    id = Column(Integer, primary_key=True)
+    imbo_id = Column(Text(length=80))
+    aspect_width = Column(Integer, nullable=False)
+    aspect_height = Column(Integer, nullable=False)
+
+    image_id = Column(Integer, ForeignKey('images.id'), nullable=False, index=True)
+    image = relationship("Image")
+
 
 UserSiteTable = Table('users_sites', Base.metadata,
     Column('user_id', Integer, ForeignKey('users.id'), nullable=False, index=True, primary_key=True),
