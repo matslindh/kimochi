@@ -224,6 +224,28 @@ class Image(Base):
 
         return data
 
+    def variations_and_site_aspect_ratios(self, site_aspect_ratios):
+        variations = {}
+
+        for variation in self.variations:
+            variations[variation.aspect_width + ':' + variation.aspect_height] = {
+                'width': variation.aspect_width,
+                'height': variation.aspect_height,
+                'has_variation': True,
+            }
+
+        for ar in site_aspect_ratios:
+            k = str(ar.width) + ':' + str(ar.height)
+
+            if k not in variations:
+                variations[k] = {
+                    'width': ar.width,
+                    'height': ar.height,
+                    'has_variation': False,
+                }
+
+        return sorted(variations.values(), key=lambda x: float(x['width']) / float(x['height']))
+
     @classmethod
     def get_from_gallery_id_and_image_id(cls, gallery_id, image_id):
         return DBSession.query(cls).filter(cls.gallery_id == gallery_id, cls.id == image_id).first()
