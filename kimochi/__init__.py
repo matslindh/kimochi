@@ -69,6 +69,9 @@ def main(global_config, **settings):
     config.add_route('site', '/sites/{site_key}')
     config.add_route('site_gallery', '/sites/{site_key}/gallery/{gallery_id}')
     config.add_route('site_gallery_image', '/sites/{site_key}/gallery/{gallery_id}/images/{image_id}')
+    config.add_route('site_gallery_image_variation',
+                     '/sites/{site_key}/gallery/{gallery_id}/images/{image_id}/variation/{width}/{height}'
+                     )
     config.add_route('site_gallery_images', '/sites/{site_key}/gallery/{gallery_id}/images')
     config.add_route('site_galleries', '/sites/{site_key}/galleries')
     config.add_route('site_page', '/sites/{site_key}/pages/{page_id}')
