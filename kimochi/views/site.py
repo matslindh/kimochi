@@ -10,6 +10,7 @@ from pyramid.httpexceptions import (
 from ..models import (
     User,
     Site,
+    SiteAspectRatio,
     DBSession,
     )
 
@@ -57,6 +58,20 @@ def site_update(request):
     if 'select_index_page' in request.POST and site.get_active_page(request.POST['select_index_page']):
         site.set_default_index_page(site.get_active_page(request.POST['select_index_page']))
         request.session.flash("The default index page has been updated.")
+
+    if 'aspect_ratio_width' in request.POST and 'aspect_ratio_height' in request.POST:
+        try:
+            width = int(request.POST['aspect_ratio_width'])
+            height = int(request.POST['aspect_ratio_height'])
+
+            if width < 1 or height < 1:
+                request.session.flash("Invalid dimensions for new aspect ratio given.")
+            else:
+                aspect = SiteAspectRatio(width=width, height=height)
+                site.aspect_ratios.append(aspect)
+                request.session.flash("New aspect ratios has been added!")
+        except ValueError:
+            request.session.flash("The provided aspect ratios was unparsable.")
 
     return HTTPSeeOther(
         location=request.current_route_url()
