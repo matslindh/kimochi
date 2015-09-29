@@ -17,6 +17,7 @@ from ..models import (
     User,
     Site,
     SiteAPIKey,
+    SiteAspectRatio,
 )
 
 
@@ -43,5 +44,11 @@ def main(argv=sys.argv):
         DBSession.add(user)
         site = Site(name='asd', key='80d621df066348e5938a469730ae0cab')
         DBSession.add(site)
-        DBSession.add(SiteAPIKey(site_id=1, key='GIKfxIcIHPbM0uX9PrQ1To29Pb2on0pa'))
+        site.api_keys.append(SiteAPIKey(key='GIKfxIcIHPbM0uX9PrQ1To29Pb2on0pa'))
         site.users.append(user)
+
+        aspect_ratio_1_1 = SiteAspectRatio(width=1, height=1)
+        aspect_ratio_3_1 = SiteAspectRatio(width=3, height=1)
+        site.aspect_ratios.append(aspect_ratio_1_1)
+        site.aspect_ratios.append(aspect_ratio_3_1)
+

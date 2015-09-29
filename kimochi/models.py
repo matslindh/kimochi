@@ -6,6 +6,7 @@ from sqlalchemy import (
     Integer,
     Table,
     Text,
+    UniqueConstraint,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -241,6 +242,7 @@ class Site(Base):
     footer = Column(Text, nullable=True)
 
     pages = relationship('Page')
+    aspect_ratios = relationship('SiteAspectRatio')
 
     def __json__(self, request):
         pages = []
@@ -339,6 +341,19 @@ class SiteAPIKey(Base):
         DBSession.add(api_key)
 
         return api_key
+
+
+class SiteAspectRatio(Base):
+    __tablename__ = 'sites_aspect_ratios'
+    __table_args__ = (UniqueConstraint('width', 'height', name='_sites_aspect_ratios_width_height'), )
+
+    id = Column(Integer, primary_key=True)
+    width = Column(Integer, nullable=False)
+    height = Column(Integer, nullable=False)
+
+    site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
+    site = relationship('Site')
+
 
 class User(Base):
     __tablename__ = 'users'
