@@ -9,6 +9,17 @@
         <img src="${request.imbo.image_url(image.imbo_id).max_size(656, 656)}" alt="Image preview" />
     </div>
 
+    <div>
+        Variations:
+
+        % for variation in image.variations_and_site_aspect_ratios(site.aspect_ratios):
+            <a href="${request.current_route_url(_route_name='site_gallery_image_variation', width=variation['width'], height=variation['height'])}">
+                ${variation['width']}:${variation['height']}
+                ${'<span class="glyphicon glyphicon-ok"></span>' if variation['has_variation'] else '<span class="glyphicon glyphicon-remove"></span>' | n}
+            </a>
+        % endfor
+    </div>
+
     <form method="post">
         <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
 
