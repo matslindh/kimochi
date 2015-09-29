@@ -239,11 +239,10 @@ class ImageVariation(Base):
     image_id = Column(Integer, ForeignKey('images.id'), nullable=False, index=True)
     image = relationship("Image")
 
-
 UserSiteTable = Table('users_sites', Base.metadata,
-    Column('user_id', Integer, ForeignKey('users.id'), nullable=False, index=True, primary_key=True),
-    Column('site_id', Integer, ForeignKey('sites.id'), nullable=False, index=True, primary_key=True)
-)
+                      Column('user_id', Integer, ForeignKey('users.id'), nullable=False, index=True, primary_key=True),
+                      Column('site_id', Integer, ForeignKey('sites.id'), nullable=False, index=True, primary_key=True)
+                      )
 
 class Site(Base):
     __tablename__ = 'sites'
