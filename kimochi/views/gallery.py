@@ -123,3 +123,28 @@ def site_gallery_image(request):
         'gallery': gallery,
         'image': image,
     }
+
+@view_config(route_name='site_gallery_image_variation', renderer='kimochi:templates/site_gallery_image_variation.mako')
+def site_gallery_image_variation(request):
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
+
+    if not gallery:
+        return HTTPNotFound()
+
+    image = Image.get_from_gallery_id_and_image_id(gallery.id, request.matchdict['image_id'])
+
+    if not image:
+        return HTTPNotFound()
+
+    try:
+        if int(request.matchdict['width']) < 1 or int(request.matchdict['height']) < 1:
+            return HTTPBadRequest()
+    except ValueError:
+        return HTTPBadRequest()
+
+    return {
+        'site': site,
+        'gallery': gallery,
+        'image': image,
+    }
