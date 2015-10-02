@@ -14,6 +14,7 @@ from ..models import (
     Site,
     Gallery,
     Image,
+    ImageVariation,
     PageSection,
     DBSession,
     )
@@ -21,6 +22,8 @@ from ..models import (
 from pyramid.security import (
     authenticated_userid,
 )
+
+from pyramid.session import check_csrf_token
 
 @view_config(route_name='site_galleries', renderer='kimochi:templates/site_galleries.mako')
 def site_galleries(request):
@@ -80,7 +83,7 @@ def site_gallery_images(request):
         if not result or 'imageIdentifier' not in result:
             return HTTPBadRequest()
 
-        image = Image(gallery=gallery, imbo_id=result['imageIdentifier'])
+        image = Image(gallery=gallery, imbo_id=result['imageIdentifier'], width=result['width'], height=result['height'])
         DBSession.add(image)
         DBSession.flush()
 
@@ -143,8 +146,27 @@ def site_gallery_image_variation(request):
     except ValueError:
         return HTTPBadRequest()
 
+    if all(k in request.POST for k in ('crop_width', 'crop_height', 'crop_offset_width', 'crop_offset_height')):
+        check_csrf_token(request)
+
+        try:
+            variation = ImageVariation(image=image)
+            variation.width = int(round(float(request.POST['crop_width'])))
+            variation.height = int(round(float(request.POST['crop_height'])))
+            variation.offset_width = int(round(float(request.POST['crop_offset_width'])))
+            variation.offset_height = int(round(float(request.POST['crop_offset_height'])))
+            variation.aspect_width = int(request.matchdict['width'])
+            variation.aspect_height = int(request.matchdict['height'])
+
+            DBSession.add(variation)
+        except ValueError as e:
+            raise HTTPBadRequest()
+
+        return HTTPFound(location=request.current_route_url(_route_name='site_gallery_image'))
+
     return {
         'site': site,
         'gallery': gallery,
         'image': image,
+        'aspect_ratio': float(request.matchdict['width']) / float(request.matchdict['height']),
     }

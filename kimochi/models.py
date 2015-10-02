@@ -189,6 +189,8 @@ class Image(Base):
 
     id = Column(Integer, primary_key=True)
     imbo_id = Column(Text(length=80))
+    width = Column(Integer, nullable=False)
+    height = Column(Integer, nullable=False)
     order = Column(Integer, default=epoch)
 
     title = Column(Text(length=140), nullable=True)
@@ -222,13 +224,25 @@ class Image(Base):
                 '1280': str(request.imbo.image_url(self.imbo_id).max_size(max_width=1280))
             }
 
+            data['variations'] = {}
+
+            for variation in self.variations:
+                var_key = str(variation.aspect_width) + ':' + str(variation.aspect_width)
+                data['variations'][var_key] = {
+                    '270x270': str(request.imbo.image_url(self.imbo_id).crop(variation.offset_width,
+                                                                             variation.offset_height,
+                                                                             variation.width,
+                                                                             variation.height
+                                                                             ).max_size(270, 270))
+                }
+
         return data
 
     def variations_and_site_aspect_ratios(self, site_aspect_ratios):
         variations = {}
 
         for variation in self.variations:
-            variations[variation.aspect_width + ':' + variation.aspect_height] = {
+            variations[str(variation.aspect_width) + ':' + str(variation.aspect_height)] = {
                 'width': variation.aspect_width,
                 'height': variation.aspect_height,
                 'has_variation': True,
@@ -254,9 +268,12 @@ class ImageVariation(Base):
     __tablename__ = 'images_variations'
 
     id = Column(Integer, primary_key=True)
-    imbo_id = Column(Text(length=80))
     aspect_width = Column(Integer, nullable=False)
     aspect_height = Column(Integer, nullable=False)
+    width = Column(Integer, nullable=False)
+    height = Column(Integer, nullable=False)
+    offset_width = Column(Integer, nullable=False)
+    offset_height = Column(Integer, nullable=False)
 
     image_id = Column(Integer, ForeignKey('images.id'), nullable=False, index=True)
     image = relationship("Image")
