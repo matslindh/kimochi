@@ -1,6 +1,7 @@
 from sqlalchemy import (
     Boolean,
     Column,
+    desc,
     ForeignKey,
     Index,
     Integer,
@@ -263,6 +264,18 @@ class Image(Base):
     @classmethod
     def get_from_gallery_id_and_image_id(cls, gallery_id, image_id):
         return DBSession.query(cls).filter(cls.gallery_id == gallery_id, cls.id == image_id).first()
+
+    @classmethod
+    def get_next_and_previous_from_image(cls, image):
+        image_prev = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.order < image.order).\
+            order_by(desc(cls.order)).first()
+        image_next = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.order > image.order).\
+            order_by(cls.order).first()
+
+        return {
+            'next': image_next,
+            'previous': image_prev,
+        }
 
 class ImageVariation(Base):
     __tablename__ = 'images_variations'
