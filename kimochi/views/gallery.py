@@ -146,11 +146,19 @@ def site_gallery_image_variation(request):
     except ValueError:
         return HTTPBadRequest()
 
+    existing_variation = ImageVariation.get_from_image_id_and_aspect(image.id,
+                                                                     int(request.matchdict['width']),
+                                                                     int(request.matchdict['height']))
+
     if all(k in request.POST for k in ('crop_width', 'crop_height', 'crop_offset_width', 'crop_offset_height')):
         check_csrf_token(request)
 
         try:
-            variation = ImageVariation(image=image)
+            if existing_variation:
+                variation = existing_variation
+            else:
+                variation = ImageVariation(image=image)
+
             variation.width = int(round(float(request.POST['crop_width'])))
             variation.height = int(round(float(request.POST['crop_height'])))
             variation.offset_width = int(round(float(request.POST['crop_offset_width'])))
@@ -169,4 +177,5 @@ def site_gallery_image_variation(request):
         'gallery': gallery,
         'image': image,
         'aspect_ratio': float(request.matchdict['width']) / float(request.matchdict['height']),
+        'existing_variation': existing_variation,
     }

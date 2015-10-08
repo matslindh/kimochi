@@ -83,6 +83,14 @@
         }
 
         $('#image-full').Jcrop({
+            % if existing_variation:
+                setSelect: [
+                    ${existing_variation.offset_width},
+                    ${existing_variation.offset_height},
+                    ${existing_variation.offset_width + existing_variation.width},
+                    ${existing_variation.offset_height + existing_variation.height}
+                ],
+            % endif
             onChange: update_preview,
             trueSize: [width, height],
             aspectRatio: ${aspect_ratio}

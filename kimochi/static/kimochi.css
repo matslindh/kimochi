@@ -32,14 +32,14 @@ header>div>div
 }
 
 header>div {
-    width: 1000px;
+    width: 1200px;
     margin: auto;
     overflow: hidden;
     position: relative;
 }
 
 #container {
-    width: 1000px;
+    width: 1200px;
     margin: auto;
     font-size:  14pt;
 }
