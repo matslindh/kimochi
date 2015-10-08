@@ -107,7 +107,8 @@
 
 <script type="text/javascript">
     tinymce.init({
-        selector: 'textarea'
+        selector: 'textarea',
+        valid_styles : { '*' : 'color,font-weight,font-style,text-decoration' }
         // plugins: "autoresize"
     });
 
