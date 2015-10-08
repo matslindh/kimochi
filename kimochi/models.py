@@ -291,6 +291,13 @@ class ImageVariation(Base):
     image_id = Column(Integer, ForeignKey('images.id'), nullable=False, index=True)
     image = relationship("Image")
 
+    @classmethod
+    def get_from_image_id_and_aspect(cls, image_id, width, height):
+        return DBSession.query(cls).filter(
+            cls.image_id == image_id,
+            cls.aspect_width == width,
+            cls.aspect_height == height).first()
+
 UserSiteTable = Table('users_sites', Base.metadata,
                       Column('user_id', Integer, ForeignKey('users.id'), nullable=False, index=True, primary_key=True),
                       Column('site_id', Integer, ForeignKey('sites.id'), nullable=False, index=True, primary_key=True)
