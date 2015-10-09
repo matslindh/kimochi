@@ -172,7 +172,7 @@ class Gallery(Base):
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
     site = relationship('Site', backref='galleries')
 
-    images = relationship('Image', backref='gallery', order_by="Image.order")
+    images = relationship('Image', backref='gallery', order_by="desc(Image.order)")
 
     def __json__(self, request):
         return {
@@ -267,9 +267,9 @@ class Image(Base):
 
     @classmethod
     def get_next_and_previous_from_image(cls, image):
-        image_prev = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.order < image.order).\
+        image_next = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.order < image.order).\
             order_by(desc(cls.order)).first()
-        image_next = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.order > image.order).\
+        image_prev = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.order > image.order).\
             order_by(cls.order).first()
 
         return {
