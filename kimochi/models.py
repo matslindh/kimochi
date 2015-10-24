@@ -332,6 +332,8 @@ class Site(Base):
 
         return {
             'name': self.name,
+            'tagline': self.tagline if self.tagline else None,
+            'meta_description': self.meta_description if self.meta_description else None,
             'key': self.key,
             'pages': pages,
             'footer': {
