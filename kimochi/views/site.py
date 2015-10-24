@@ -73,6 +73,23 @@ def site_update(request):
         except ValueError:
             request.session.flash("The provided aspect ratios was unparsable.")
 
+    updated_details = False
+
+    if 'site_name' in request.POST and len(request.POST.getone('site_name')) > 0:
+        site.name = request.POST.getone('site_name')
+        updated_details = True
+
+    if 'site_meta_description' in request.POST:
+        site.meta_description = request.POST.getone('site_meta_description')
+        updated_details = True
+
+    if 'site_tagline' in request.POST:
+        site.tagline = request.POST.getone('site_tagline')
+        updated_details = True
+
+    if updated_details:
+        request.session.flash("Site details has been updated!")
+
     return HTTPSeeOther(
         location=request.current_route_url()
     )
