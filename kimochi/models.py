@@ -308,6 +308,11 @@ class Site(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Text(length=40), unique=True)
+    tagline = Column(Text(length=200), nullable=True)
+    meta_description = Column(Text(length=600), nullable=True)
+
+    header_imbo_id = Column(Text(length=80), nullable=True)
+
     key = Column(Text(length=32), unique=True, default=lambda: uuid.uuid4().hex)
 
     footer = Column(Text, nullable=True)
