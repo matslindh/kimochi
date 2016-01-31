@@ -14,80 +14,21 @@
 </h3>
 
 % for section in page.sections:
-    <form method="post" id="page-section-${section.id}" class="page-section collapsed" data-section-id="${section.id}" style="overflow: hidden;">
+    <form method="post" id="page-section-${section.id}" class="page-section" data-section-id="${section.id}" style="overflow: hidden;">
         <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
         <input type="hidden" name="page_section_id" value="${section.id}" />
         <div style="overflow: hidden; margin-bottom: 1.0em;">
             <input type="submit" value="Save" class="btn btn-default" style="float: right; margin-left: 2.0em;" />
 
             <div class="btn-group btn-group-sm" data-toggle="buttons" role="group" style="float: left;">
-                <label class="btn btn-default ${'active' if section.type == 'text' else '' | n}"><input type="radio" name="section_type" ${'checked="checked"' if section.type == 'text' else '' | n} value="text">Text</label>
-                <label class="btn btn-default ${'active' if section.type == 'gallery' else '' | n}"><input type="radio" name="section_type" ${'checked="checked"' if section.type == 'gallery' else '' | n} value="gallery">Gallery</label>
+                ${section.type}
             </div>
         </div>
 
-        <div class="section-type-container section-type-text">
-            <textarea style="clear: both; height: 300px; margin-top: 2.0em;" name="section_content">${section.content if section.content else ''}</textarea>
-        </div>
-
-        <div class="section-type-container section-type-gallery container-fluid">
-            % if section.gallery:
-                <h4>${section.gallery.name}</h4>
-
-                % if section.gallery.images:
-                    % for image in section.gallery.images:
-                        <div class="col-md-4" style="margin-top: 1.0em;">
-                            <a href="${request.route_url('site_gallery_image', site_key=site.key, gallery_id=section.gallery.id, image_id=image.id)}?return_page_section_id=${section.id}">
-                                <h5>${image.title if image.title else 'No title'}</h5>
-
-                                <div>
-                                    <img src="${request.imbo.image_url(image.imbo_id).max_size(150, 150)}" alt="${image.title}" />
-                                </div>
-                            </a>
-                        </div>
-                    % endfor
-                % else:
-                    <div class="placeholder">
-                        Empty gallery
-                    </div>
-                % endif
-            % else:
-                <h4>Select a gallery</h4>
-
-                % if site.galleries:
-                    % for gallery in site.galleries:
-                        <div class="col-md-4">
-                            <a href="#" class="gallery-picker" data-gallery-id="${gallery.id}">
-                                <h5>${gallery.name}</h5>
-
-                                % if gallery.images:
-                                    <div>
-                                        <img src="${request.imbo.image_url(gallery.images[0].imbo_id).max_size(150, 150)}" alt="${gallery.images[0].title if gallery.images[0].title else ''}" />
-                                    </div>
-                                % else:
-                                    <div class="placeholder">
-                                        Empty gallery
-                                    </div>
-                                % endif
-                            </a>
-                        </div>
-                    % endfor
-                % else:
-                    <div class="placeholder lg">
-                        You haven't added any galleries for this site yet. <a href="${request.route_url('site_galleries', site_key=site.key)}">Add galleries</a>
-                    </div>
-                % endif
-            % endif
-        </div>
+        <%include file="sections/${section.type}.mako" args="section=section" />
 
         <input type="submit" value="Save" class="btn btn-default" style="margin-top: 0.5em; margin-bottom: 3.0em; float: right;"/>
     </form>
-
-    <a href="#" class="activate-section btn btn-default btn-lg btn-block" id="activate-section-${section.id}" role="button" style="margin-bottom: 1.0em; overflow: hidden; color: #aaa;" data-section-id="${section.id}">
-        ${section.type}
-
-        <span class="glyphicon glyphicon-chevron-down" style="float: right;"></span>
-    </a>
 % endfor
 
 <div style="text-align: center; border-top: 1px solid #ccc; color: #888; margin-top: 1.5em;">
@@ -105,13 +46,7 @@
     </form>
 </div>
 
-<script type="text/javascript">
-    tinymce.init({
-        selector: 'textarea',
-        valid_styles : { '*' : 'color,font-weight,font-style,text-decoration' }
-        // plugins: "autoresize"
-    });
-
+<!--
     var activate_section = function (section_id) {
         // return early if the section already is the active section
         if ($("#page-section-" + section_id).is(':visible'))
@@ -140,13 +75,14 @@
 
         root.find(".section-type-container").hide();
         root.find(".section-type-" + type).slideDown(200);
-    };
+    }; -->
 
+<script type="text/javascript">
     $(document).ready(function () {
         if (window.location.hash && (window.location.hash.substring(0, 14) == '#page-section-'))
         {
             var section_id = window.location.hash.substring(14)
-            activate_section(section_id);
+            //activate_section(section_id);
         }
         else
         {
@@ -154,32 +90,8 @@
 
             if (section_id)
             {
-                activate_section(section_id);
+                //activate_section(section_id);
             }
         }
-    });
-
-    $(".activate-section").click(function () {
-        activate_section($(this).data('section-id'));
-        return false;
-    });
-
-    $("input[name=section_type]").change(function () {
-        update_section_type(get_section_id_from_element($(this)));
-    });
-
-    $(".gallery-picker").click(function () {
-        $.post("${request.current_route_url()}", {
-                "section_gallery_id": $(this).data('gallery-id'),
-                "page_section_id": get_section_id_from_element($(this)),
-                "csrf_token": "${request.session.get_csrf_token()}",
-            }, function (el) {
-                return function (data) {
-                    $(el).addClass("selected");
-                };
-            }(this)
-        );
-
-        return false;
     });
 </script>
