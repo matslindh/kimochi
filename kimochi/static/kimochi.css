@@ -233,3 +233,25 @@ a.gallery-picker
     display: inline-block;
     padding: 4px;
 }
+
+ol.page-section-list
+{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+ol.page-section-list>li
+{
+    margin: 0;
+    padding: 0;
+    padding-bottom: 1.5em;
+    border-bottom: 1px solid #ff000;
+}
+
+ol.page-section-list-empty
+{
+    border: 1px dashed #cfcfcf;
+    border-radius: 4px;
+    min-height: 300px;
+}

@@ -12,17 +12,23 @@
         Editing Page: ${page.name}
     </h3>
 
-    % for section in page.get_sections_active():
-        <div style="overflow: hidden; margin-bottom: 1.0em;">
-            <div class="btn-group btn-group-sm" data-toggle="buttons" role="group" style="float: left;">
-                ${section.type}
-            </div>
-        </div>
+    <ol class="page-section-list" id="page-section-list">
+        % for section in page.get_sections_active():
+            <li>
+                <div style="overflow: hidden; margin-bottom: 1.0em;">
+                    <div class="sort-handle">☰</div>
 
-        <%include file="sections/${section.type}.mako" args="section=section" />
+                    <div class="btn-group btn-group-sm" data-toggle="buttons" role="group" style="float: left;">
+                        ${section.type}
+                    </div>
+                </div>
 
-        <hr />
-    % endfor
+                <%include file="sections/${section.type}.mako" args="section=section" />
+
+                <hr />
+            </li>
+        % endfor
+    </ol>
 </form>
 
 <div style="text-align: center; color: #888; margin-top: 1.5em;">
@@ -47,38 +53,19 @@
     </form>
 </div>
 
-<!--
-    var activate_section = function (section_id) {
-        // return early if the section already is the active section
-        if ($("#page-section-" + section_id).is(':visible'))
-        {
-            return;
-        }
-
-        $(".page-section").slideUp(200);
-        $(".activate-section, #page-section-" + section_id).show();
-        update_section_type(section_id);
-        $("#activate-section-" + section_id).hide();
-
-        $(".menu-section-link").removeClass('active');
-        $("#menu-page-section-id-" + section_id).addClass('active');
-
-        history.replaceState(null, "", "#page-section-" + section_id);
-    }
-
-    var get_section_id_from_element = function (el) {
-        return el.closest("form").data("section-id");
-    }
-
-    var update_section_type = function (section_id) {
-        var root = $("#page-section-" + section_id);
-        var type = root.find("input[name=section_type]:checked").val();
-
-        root.find(".section-type-container").hide();
-        root.find(".section-type-" + type).slideDown(200);
-    }; -->
-
 <script type="text/javascript">
+    var sortable = new Sortable(document.getElementById('page-section-list'), {
+        handle: '.sort-handle',
+        ghostClass: 'sort-ghost',
+        animation: 100,
+        onEnd: function (evt) {
+            if (evt.oldIndex != evt.newIndex)
+            {
+                // $("#gallery-save-button").addClass("btn-primary");
+            };
+        }
+    });
+
     $(document).ready(function () {
         if (window.location.hash && (window.location.hash.substring(0, 14) == '#page-section-'))
         {
@@ -95,4 +82,6 @@
             }
         }
     });
+
+    $(".page-section-list").not(":has(li)").addClass('page-section-list-empty');
 </script>
