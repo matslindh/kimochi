@@ -1,3 +1,5 @@
+<%page args="section" />
+
 <div class="section-type-container section-type-gallery container-fluid">
     % if section.gallery:
         <h4>${section.gallery.name}</h4>

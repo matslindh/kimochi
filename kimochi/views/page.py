@@ -94,7 +94,18 @@ def site_page_update(request):
             )
 
         elif request.POST['command'] == 'page_section_create':
-            page_section = PageSection(page=page, type='gallery')
+            section_type = 'text'
+            valid = ['text', 'gallery', 'two_columns']
+
+            for v in valid:
+                if v in request.POST:
+                    section_type = v
+                    break
+
+            if section_type == 'two_columns':
+                page_section = PageSection.create_two_columns(page=page)
+            else:
+                page_section = PageSection(page=page, type=section_type)
 
             DBSession.add(page_section)
             DBSession.flush()

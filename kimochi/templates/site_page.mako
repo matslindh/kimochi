@@ -2,24 +2,18 @@
 
 <script src="//tinymce.cachefly.net/4.2/tinymce.min.js"></script>
 
-<h3 class="top" style="border-bottom: 1px solid #ccc; padding-bottom: 16px;">
-    <form method="post">
-        <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
-        <input type="hidden" name="command" value="toggle_published" />
+<form method="post">
+    <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
+    <input type="hidden" name="command" value="toggle_published" />
 
+    <h3 class="top" style="border-bottom: 1px solid #ccc; padding-bottom: 16px;">
+        <input type="submit" value="Save" class="btn btn-default" style="margin-left: 2.0em; float: right;"/>
         <input type="submit" value="${'Published and live' if page.published else 'Not published'}" class="btn ${'btn-primary' if page.published else 'btn-default active'} btn-lg" style="float: right; margin-left: 2.0em;" />
-    </form>
+        Editing Page: ${page.name}
+    </h3>
 
-    Editing Page: ${page.name}
-</h3>
-
-% for section in page.sections:
-    <form method="post" id="page-section-${section.id}" class="page-section" data-section-id="${section.id}" style="overflow: hidden;">
-        <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
-        <input type="hidden" name="page_section_id" value="${section.id}" />
+    % for section in page.get_sections_active():
         <div style="overflow: hidden; margin-bottom: 1.0em;">
-            <input type="submit" value="Save" class="btn btn-default" style="float: right; margin-left: 2.0em;" />
-
             <div class="btn-group btn-group-sm" data-toggle="buttons" role="group" style="float: left;">
                 ${section.type}
             </div>
@@ -27,21 +21,28 @@
 
         <%include file="sections/${section.type}.mako" args="section=section" />
 
-        <input type="submit" value="Save" class="btn btn-default" style="margin-top: 0.5em; margin-bottom: 3.0em; float: right;"/>
-    </form>
-% endfor
+        <hr />
+    % endfor
+</form>
 
-<div style="text-align: center; border-top: 1px solid #ccc; color: #888; margin-top: 1.5em;">
+<div style="text-align: center; color: #888; margin-top: 1.5em;">
     <form method="post">
         <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
         <input type="hidden" name="command" value="page_section_create" />
 
-        <button class="btn" style="background: none;">
             <p>
                 Add a new page section
             </p>
 
-            <span class="glyphicon glyphicon-chevron-down"></span>
+            <button class="btn" style="background: none;" name="text">
+                <span class="glyphicon glyphicon-align-justify" title="Text"></span>
+            </button>
+            <button class="btn" style="background: none;" name="gallery" title="Gallery">
+                <span class="glyphicon glyphicon-picture"></span>
+            </button>
+            <button class="btn" style="background: none;" name="two_columns" title="Column Layout">
+                <span class="glyphicon glyphicon-object-align-top"></span>
+            </button>
         </button>
     </form>
 </div>

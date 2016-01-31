@@ -8,7 +8,7 @@
                     <a href="${request.route_url('site_page', site_key=site.key, page_id=page.id)}">${page.name}</a>
 
                     <ol>
-                        % for section in page.sections:
+                        % for section in page.get_sections_active():
                             <li style="margin-bottom: 4px;">
                                 <a href="#page-section-${section.id}" id="menu-page-section-id-${section.id}" class="activate-section menu-section-link btn btn-default btn-block" data-section-id="${section.id}" style="text-align: left;">
                                     ${section.type}
