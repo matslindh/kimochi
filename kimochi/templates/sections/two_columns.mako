@@ -2,7 +2,9 @@
 
 <div class="section-type-container section-type-two-columns">
     <div class="rows">
-        <div class="col-sm-6">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-5">
             <ol class="page-section-list" id="two-columns-left-${section.id}">
                 % for _section in section.sections[0].sections:
                     <li>
@@ -15,7 +17,9 @@
                 % endfor
             </ol>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-5">
             <ol class="page-section-list" id="two-columns-right-${section.id}">
                 % for _section in section.sections[1].sections:
                     <li>
