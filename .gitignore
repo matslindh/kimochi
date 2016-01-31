@@ -55,3 +55,6 @@ docs/_build/
 # kimochi
 kimochi.sqlite
 development_local.ini
+
+# sessions
+data/
