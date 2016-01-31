@@ -6,6 +6,8 @@
 
 <script type="text/javascript">
     tinymce.init({
+        menubar: false,
+        statusbar: false,
         selector: '#text_${section.id}',
         valid_styles : { '*' : 'color,font-weight,font-style,text-decoration' }
         // plugins: "autoresize"
