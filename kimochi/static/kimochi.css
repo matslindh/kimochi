@@ -107,6 +107,7 @@ nav>ol>li
 
 .section-type-container
 {
+    overflow: hidden;
 }
 
 #gallery-file-uploader
