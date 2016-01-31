@@ -9,18 +9,12 @@ from paste.deploy import loadapp
 from logging.config import fileConfig
 from sqlalchemy.engine.base import Engine
 
-
-try:
-    # if pylons app already in, don't create a new app
-    from pylons import config as pylons_config
-    pylons_config['__file__']
-except:
-    config = context.config
-    # can use config['__file__'] here, i.e. the Pylons
-    # ini file, instead of alembic.ini
-    config_file = config.get_main_option('pylons_config_file')
-    fileConfig(config_file)
-    wsgi_app = loadapp('config:%s' % config_file, relative_to='.')
+config = context.config
+# can use config['__file__'] here, i.e. the Pylons
+# ini file, instead of alembic.ini
+config_file = config.get_main_option('pylons_config_file')
+fileConfig(config_file)
+wsgi_app = loadapp('config:%s' % config_file, relative_to='.')
 
 
 # customize this section for non-standard engine configurations.
@@ -28,9 +22,8 @@ meta = __import__("%s.model.meta" % wsgi_app.config['pylons.package']).model.met
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
+from kimochi.models import Base
+target_metadata = Base
 
 
 def run_migrations_offline():
