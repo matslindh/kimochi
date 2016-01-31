@@ -140,6 +140,9 @@ class PageSection(Base):
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=True)
     gallery = relationship('Gallery')
 
+    parent_section_id = Column(Integer, ForeignKey('pages_sections.id'))
+    sections = relationship("PageSection")
+
     def __json__(self, request):
         return {
             'type': self.type,
