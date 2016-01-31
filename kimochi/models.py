@@ -152,7 +152,7 @@ class PageSection(Base):
 
     @classmethod
     def get_active_from_page_id(cls, page_id):
-        return DBSession.query(cls).filter(cls.page_id == page_id, cls.deleted == False).order_by('order').all()
+        return DBSession.query(cls).filter(cls.page_id == page_id, cls.deleted == False, cls.parent_section_id == None).order_by('order').all()
 
     @classmethod
     def get_from_page_id_and_page_section_id(cls, page_id, page_section_id):
@@ -165,6 +165,24 @@ class PageSection(Base):
     @classmethod
     def is_valid_type(cls, page_type):
         return page_type in ('text', 'gallery', )
+
+    @classmethod
+    def create_two_columns(cls, page):
+        two_columns = PageSection(page=page, type='two_columns')
+        container_left = PageSection(page=page, order=1, type='container')
+        container_right = PageSection(page=page, order=2, type='container')
+
+        text_left = PageSection(page=page, type='text')
+        text_right = PageSection(page=page, type='text')
+
+        container_left.sections.append(text_left)
+        container_right.sections.append(text_right)
+
+        two_columns.sections.append(container_left)
+        two_columns.sections.append(container_right)
+
+        return two_columns
+
 
 class Gallery(Base):
     __tablename__ = 'galleries'
