@@ -9,6 +9,7 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
 
 requires = [
+    'alembic',
     'bcrypt',
     'imboclient',
     'passlib',
@@ -50,5 +51,5 @@ setup(name='kimochi',
       main = kimochi:main
       [console_scripts]
       initialize_kimochi_db = kimochi.scripts.initializedb:main
-      """,
+      """,      
       )
