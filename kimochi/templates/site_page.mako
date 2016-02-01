@@ -6,7 +6,7 @@
     <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
     <input type="hidden" name="command" value="toggle_published" />
 
-    <h3 class="top" style="border-bottom: 1px solid #ccc; padding-bottom: 16px;">
+    <h3 class="top">
         <input type="submit" value="Save" class="btn btn-default" style="margin-left: 2.0em; float: right;"/>
         <input type="submit" value="${'Published and live' if page.published else 'Not published'}" class="btn ${'btn-primary' if page.published else 'btn-default active'} btn-lg" style="float: right; margin-left: 2.0em;" />
         Editing Page: ${page.name}
@@ -24,32 +24,18 @@
                 </div>
 
                 <%include file="sections/${section.type}.mako" args="section=section" />
-
-                <hr />
             </li>
         % endfor
     </ol>
 </form>
 
-<div style="text-align: center; color: #888; margin-top: 1.5em;">
+<div class="page-section-footer">
+    <%include file="sections/helpers/section_type_dropdown.mako" />
+
     <form method="post">
         <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
         <input type="hidden" name="command" value="page_section_create" />
 
-            <p>
-                Add a new page section
-            </p>
-
-            <button class="btn" style="background: none;" name="text">
-                <span class="glyphicon glyphicon-align-justify" title="Text"></span>
-            </button>
-            <button class="btn" style="background: none;" name="gallery" title="Gallery">
-                <span class="glyphicon glyphicon-picture"></span>
-            </button>
-            <button class="btn" style="background: none;" name="two_columns" title="Column Layout">
-                <span class="glyphicon glyphicon-object-align-top"></span>
-            </button>
-        </button>
     </form>
 </div>
 

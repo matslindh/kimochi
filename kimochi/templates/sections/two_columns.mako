@@ -16,6 +16,10 @@
                     </li>
                 % endfor
             </ol>
+
+            <div class="column-add-button-container">
+                <%include file="helpers/section_type_dropdown.mako" args="hide_columns=True, button_text='Add column element'" />
+            </div>
         </div>
         <div class="col-sm-1">
         </div>
@@ -31,6 +35,10 @@
                     </li>
                 % endfor
             </ol>
+
+            <div class="column-add-button-container">
+                <%include file="helpers/section_type_dropdown.mako" args="hide_columns=True, button_text='Add column element'" />
+            </div>
         </div>
     </div>
 </div>

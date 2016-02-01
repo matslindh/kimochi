@@ -71,8 +71,7 @@ form ul {
 h3.top
 {
     margin-top: 0;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 0.2em;
+    padding-bottom: 0.4em;
     overflow: hidden;
 }
 
@@ -103,11 +102,6 @@ nav>ol>li
 .collapsed, .hidden
 {
     display: none;
-}
-
-.section-type-container
-{
-    overflow: hidden;
 }
 
 #gallery-file-uploader
@@ -234,19 +228,29 @@ a.gallery-picker
     padding: 4px;
 }
 
+.section-type-container
+{
+    overflow: hidden;
+}
+
 ol.page-section-list
 {
     margin: 0;
     padding: 0;
     list-style-type: none;
+    min-height: 150px;
 }
 
 ol.page-section-list>li
 {
     margin: 0;
     padding: 0;
+    padding-top: 1.5em;
     padding-bottom: 1.5em;
-    border-bottom: 1px solid #ff000;
+    margin-right: 1px;
+    clear: both;
+    overflow: overflow;
+    border-top: 1px solid #efefef;
 }
 
 ol.page-section-list-empty
@@ -254,4 +258,20 @@ ol.page-section-list-empty
     border: 1px dashed #cfcfcf;
     border-radius: 4px;
     min-height: 300px;
+    margin-bottom: 1.0em;
+}
+
+.column-add-button-container
+{
+    text-align: right;
+    text-size: 0.9em;
+}
+
+.page-section-footer
+{
+    text-align: center;
+    color: #888;
+    margin-top: 2.0em;
+    border-top: 2px solid #efefef;
+    padding-top: 2.0em;
 }

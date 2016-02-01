@@ -1,6 +1,6 @@
 <%inherit file="site_base.mako" />
 
-<nav class="col-md-4">
+<nav class="col-md-3">
     <ol class="nav nav-pills nav-stacked">
         % for page in site.pages:
             % if 'page_id' in request.matchdict and int(request.matchdict['page_id']) == page.id:
@@ -37,6 +37,6 @@
     </ol>
 </nav>
 
-<div class="col-md-8">
+<div class="col-md-9">
     ${next.body()}
 </div>
