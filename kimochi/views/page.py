@@ -21,6 +21,8 @@ from pyramid.security import (
     authenticated_userid,
 )
 
+from pyramid.renderers import JSON
+
 @view_config(route_name='site_pages', request_method='POST', check_csrf=True)
 def site_pages(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
@@ -53,7 +55,9 @@ def site_pages_list(request):
         'site': site,
     }
 
-@view_config(route_name='site_page', request_method='POST', renderer='kimochi:templates/site_page.mako', check_csrf=True)
+
+@view_config(route_name='site_page', request_method='POST', renderer='kimochi:templates/site_page.mako', check_csrf=True, xhr=False)
+@view_config(route_name='site_page', request_method='POST', renderer='json', check_csrf=True, xhr=True)
 def site_page_update(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
     page = Page.get_for_site_id_and_page_id(site.id, request.matchdict['page_id'])
@@ -85,14 +89,19 @@ def site_page_update(request):
             location=request.route_url('site_page', site_key=site.key, page_id=page.id) + '#page-section-' + str(page_section.id)
         )
 
-    if request.POST and 'command' in request.POST:
-        if request.POST['command'] == 'toggle_published':
+    if request.method == 'POST':
+        if request.headers['Content-Type'].startswith('application/json'):
+            # We need to actually save stuff here and return False if things are fubar
+            return {
+                'success': True,
+            }
+
+        if 'toggle_published' in request.POST:
             page.published = not page.published
 
             return HTTPSeeOther(
                 location=request.current_route_url()
             )
-
         elif request.POST['command'] == 'page_section_create':
             section_type = 'text'
             valid = ['text', 'gallery', 'two_columns']
@@ -118,6 +127,7 @@ def site_page_update(request):
         'site': site,
         'page': page,
     }
+
 
 @view_config(route_name='site_page', renderer='kimochi:templates/site_page.mako')
 def site_page(request):
