@@ -17,7 +17,7 @@
                 % endfor
             </ol>
 
-            <div class="column-add-button-container">
+            <div class="column-add-button-container" data-add-sub-section-index="0">
                 <%include file="helpers/section_type_dropdown.mako" args="hide_columns=True, button_text='Add column element'" />
             </div>
         </div>
@@ -36,7 +36,7 @@
                 % endfor
             </ol>
 
-            <div class="column-add-button-container">
+            <div class="column-add-button-container" data-add-sub-section-index="1">
                 <%include file="helpers/section_type_dropdown.mako" args="hide_columns=True, button_text='Add column element'" />
             </div>
         </div>

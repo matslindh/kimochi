@@ -21,7 +21,7 @@ from pyramid.security import (
     authenticated_userid,
 )
 
-from pyramid.renderers import JSON
+from pyramid.renderers import render
 
 @view_config(route_name='site_pages', request_method='POST', check_csrf=True)
 def site_pages(request):
@@ -96,32 +96,57 @@ def site_page_update(request):
                 'success': True,
             }
 
+        valid_section_types = ['text', 'gallery', 'two_columns']
+        valid_section_types_parent = ['two_columns']
+
         if 'toggle_published' in request.POST:
             page.published = not page.published
 
             return HTTPSeeOther(
                 location=request.current_route_url()
             )
-        elif request.POST['command'] == 'page_section_create':
-            section_type = 'text'
-            valid = ['text', 'gallery', 'two_columns']
-
-            for v in valid:
-                if v in request.POST:
-                    section_type = v
-                    break
+        elif 'add_section_type' in request.POST and request.POST.getone('add_section_type') in valid_section_types:
+            section_type = request.POST.getone('add_section_type')
 
             if section_type == 'two_columns':
                 page_section = PageSection.create_two_columns(page=page)
             else:
                 page_section = PageSection(page=page, type=section_type)
 
+                if 'parent_section_id' in request.POST:
+                    parent_section_id = request.POST.getone('parent_section_id')
+                    parent_section = PageSection.get_from_id(parent_section_id)
+
+                    if not parent_section:
+                        raise HTTPBadRequest
+
+                    if parent_section.page_id != page.id:
+                        raise HTTPBadRequest
+
+                    if parent_section.type not in valid_section_types_parent:
+                        raise HTTPBadRequest
+
+                    if 'parent_sub_section_idx' in request.POST:
+                        idx = int(request.POST.getone('parent_sub_section_idx'))
+                        print(idx)
+
+                        if idx >= len(parent_section.sections):
+                            raise HTTPBadRequest
+
+                        parent_section.sections[idx].sections.append(page_section)
+                    else:
+                        parent_section.sections.append(page_section)
+
             DBSession.add(page_section)
             DBSession.flush()
 
-            return HTTPSeeOther(
-                location=request.route_url('site_page', site_key=site.key, page_id=page.id) + '#page-section-' + str(page_section.id)
-            )
+            content = render('kimochi:templates/sections/wrapper.mako',
+                    {'section': page_section, 'site': site, 'page': page, },
+                    request=request)
+
+            return {
+                'content': content,
+            }
 
     return {
         'site': site,

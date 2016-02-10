@@ -13,17 +13,7 @@
 
     <ol class="page-section-list" id="page-section-list">
         % for section in page.get_sections_active():
-            <li>
-                <div style="overflow: hidden; margin-bottom: 1.0em;">
-                    <div class="sort-handle">☰</div>
-
-                    <div class="btn-group btn-group-sm" data-toggle="buttons" role="group" style="float: left;">
-                        ${section.type}
-                    </div>
-                </div>
-
-                <%include file="sections/${section.type}.mako" args="section=section" />
-            </li>
+            <%include file="sections/wrapper.mako" args="section=section" />
         % endfor
     </ol>
 </form>
@@ -68,7 +58,7 @@
             url: $(this).attr('action'),
             data: json,
             contentType: "application/json; charset=utf-8",
-            headers: { 'X-CSRF-Token': "${request.session.get_csrf_token()}" },
+            headers: { "X-CSRF-Token": "${request.session.get_csrf_token()}" },
             dataType: "json"
         })
         .done(function (data) {
@@ -78,6 +68,36 @@
             console.log("failed serializing section data to server");
         });
 
+        return false;
+    });
+
+    $(document).on("click", "button.btn-section-create", function () {
+        // collapse the dropup
+        $(this).closest(".btn-group-new-section").find(".dropdown-toggle").dropdown('toggle');
+
+        var parent_section_id = $(this).closest("li[data-section-id]").data("section-id");
+        var parent_sub_section_idx = $(this).closest("[data-add-sub-section-index]").data("add-sub-section-index");
+
+        if (!parent_section_id) {
+            parent_section_id = null;
+        }
+
+        // we need === to avoid 0 evaluating as undefined
+        if (parent_sub_section_idx === undefined) {
+            parent_sub_section_idx = null;
+        }
+
+        console.log(parent_section_id);
+
+        // create the new section and insert the new content
+        $.post("", {
+                "csrf_token": "${request.session.get_csrf_token()}",
+                "add_section_type": $(this).attr("name"),
+                "parent_section_id": parent_section_id,
+                "parent_sub_section_idx": parent_sub_section_idx
+            }, function (data) {
+            console.log(data);
+        });
         return false;
     });
 
