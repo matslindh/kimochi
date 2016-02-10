@@ -128,7 +128,6 @@ def site_page_update(request):
 
                     if 'parent_sub_section_idx' in request.POST:
                         idx = int(request.POST.getone('parent_sub_section_idx'))
-                        print(idx)
 
                         if idx >= len(parent_section.sections):
                             raise HTTPBadRequest
