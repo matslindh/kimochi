@@ -18,14 +18,8 @@
     </ol>
 </form>
 
-<div class="page-section-footer">
+<div class="page-section-footer" data-page-section-list-id="page-section-list">
     <%include file="sections/helpers/section_type_dropdown.mako" />
-
-    <form method="post">
-        <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
-        <input type="hidden" name="command" value="page_section_create" />
-
-    </form>
 </div>
 
 <script type="text/javascript">
@@ -51,6 +45,7 @@
     };
 
     $("#save-layout-form").submit(function () {
+        tinymce.triggerSave();
         var json = serialize_section_contents();
 
         $.ajax({
@@ -87,17 +82,20 @@
             parent_sub_section_idx = null;
         }
 
-        console.log(parent_section_id);
-
         // create the new section and insert the new content
         $.post("", {
                 "csrf_token": "${request.session.get_csrf_token()}",
                 "add_section_type": $(this).attr("name"),
                 "parent_section_id": parent_section_id,
                 "parent_sub_section_idx": parent_sub_section_idx
-            }, function (data) {
-            console.log(data);
-        });
+            }, function (element) {
+                return function (data) {
+                    var section_list_id = element.closest("[data-page-section-list-id]").data("page-section-list-id");
+                    $("#" + section_list_id).append($(data['content']))
+                };
+            }($(this))
+        );
+
         return false;
     });
 

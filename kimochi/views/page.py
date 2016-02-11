@@ -92,6 +92,27 @@ def site_page_update(request):
     if request.method == 'POST':
         if request.headers['Content-Type'].startswith('application/json'):
             # We need to actually save stuff here and return False if things are fubar
+            try:
+                data = request.json_body
+            except:
+                raise HTTPBadRequest
+
+            if 'sections' not in data or not isinstance(data['sections'], dict):
+                raise HTTPBadRequest
+
+            # loop through the sections and write content
+            # galleries / images usually update live, so we just do text for now..
+            for section_id in data['sections']:
+                submitted = data['sections'][section_id]
+                section = PageSection.get_from_page_id_and_page_section_id(page.id, section_id)
+
+                if not section:
+                    raise HTTPBadRequest
+
+                if section.type == 'text' and 'content' in submitted:
+                    # purifier here?
+                    section.content = submitted['content']
+
             return {
                 'success': True,
             }
@@ -113,7 +134,7 @@ def site_page_update(request):
             else:
                 page_section = PageSection(page=page, type=section_type)
 
-                if 'parent_section_id' in request.POST:
+                if 'parent_section_id' in request.POST and request.POST['parent_section_id']:
                     parent_section_id = request.POST.getone('parent_section_id')
                     parent_section = PageSection.get_from_id(parent_section_id)
 
