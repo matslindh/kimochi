@@ -9,7 +9,8 @@
         menubar: false,
         statusbar: false,
         selector: '#text_${section.id}',
-        valid_styles : { '*' : 'color,font-weight,font-style,text-decoration' }
+        valid_styles: { '*' : 'color,font-weight,font-style,text-decoration' },
+        content_css: "${request.static_url('kimochi:static/tinymce.css')}"
         // plugins: "autoresize"
     });
 </script>
