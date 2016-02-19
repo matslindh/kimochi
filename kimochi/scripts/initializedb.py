@@ -52,3 +52,8 @@ def main(argv=sys.argv):
         site.aspect_ratios.append(aspect_ratio_1_1)
         site.aspect_ratios.append(aspect_ratio_3_1)
 
+    from alembic.config import Config
+    from alembic import command
+    alembic_cfg = Config("alembic.ini")
+    command.stamp(alembic_cfg, "head")
+
