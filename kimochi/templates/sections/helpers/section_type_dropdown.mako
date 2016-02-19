@@ -16,6 +16,11 @@
                 <span class="glyphicon glyphicon-picture"></span> Gallery
             </button>
         </li>
+        <li>
+            <button class="btn btn-section-create" style="background: none; width: 100%; text-align: left; " name="image" title="Image">
+                <span class="glyphicon glyphicon-picture"></span> Image
+            </button>
+        </li>
         % if not hide_columns:
             <li>
                 <button class="btn btn-section-create" style="background: none; width: 100%; text-align: left; " name="two_columns" title="Column Layout">

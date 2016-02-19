@@ -140,14 +140,19 @@ class PageSection(Base):
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=True)
     gallery = relationship('Gallery')
 
+    images = relationship('PageSectionImage', cascade="save-update, merge, delete, delete-orphan")
+
     parent_section_id = Column(Integer, ForeignKey('pages_sections.id'))
     sections = relationship("PageSection")
 
     def __json__(self, request):
         return {
+            'id': self.id,
             'type': self.type,
             'content': self.content,
             'gallery': self.gallery,
+            'images': [page_section_image.image for page_section_image in self.images] if self.images else [],
+            'sections': self.sections,
         }
 
     @classmethod
@@ -163,8 +168,12 @@ class PageSection(Base):
         return DBSession.query(cls).filter(cls.id == section_id, cls.deleted == False).first()
 
     @classmethod
-    def is_valid_type(cls, page_type):
-        return page_type in ('text', 'gallery', )
+    def is_valid_type(cls, section_type):
+        return section_type in ('text', 'gallery', 'two_columns', 'image')
+
+    @classmethod
+    def is_valid_parent_type(cls, section_type):
+        return section_type in ('two_columns', )
 
     @classmethod
     def create_two_columns(cls, page):
@@ -182,6 +191,16 @@ class PageSection(Base):
         two_columns.sections.append(container_right)
 
         return two_columns
+
+
+class PageSectionImage(Base):
+    __tablename__ = 'pages_sections_images'
+
+    page_section_id = Column(Integer, ForeignKey('pages_sections.id'), primary_key=True)
+    image_id = Column(Integer, ForeignKey('images.id'), primary_key=True)
+
+    image = relationship('Image')
+    page_section = relationship('PageSection')
 
 
 class Gallery(Base):
@@ -223,8 +242,11 @@ class Image(Base):
 
     deleted = Column(Boolean, default=False)
 
-    gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=False, index=True)
+    gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=True, index=True)
     variations = relationship("ImageVariation")
+
+    site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
+    site = relationship('Site', backref='images')
 
     def __json__(self, request):
         data = {
@@ -285,6 +307,10 @@ class Image(Base):
     @classmethod
     def get_from_gallery_id_and_image_id(cls, gallery_id, image_id):
         return DBSession.query(cls).filter(cls.gallery_id == gallery_id, cls.id == image_id).first()
+
+    @classmethod
+    def get_from_site_id_and_image_id(cls, site_id, image_id):
+        return DBSession.query(cls).filter(cls.site_id == site_id, cls.id == image_id).first()
 
     @classmethod
     def get_next_and_previous_from_image(cls, image):

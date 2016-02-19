@@ -8,6 +8,7 @@ from pyramid.httpexceptions import (
     HTTPSeeOther,
     HTTPBadRequest,
     HTTPNoContent,
+    HTTPServerError,
 )
 
 from ..models import (
@@ -81,7 +82,7 @@ def site_gallery_images(request):
         result = request.imbo.add_image_from_string(request.POST['file'].file)
 
         if not result or 'imageIdentifier' not in result:
-            return HTTPBadRequest()
+            return HTTPServerError()
 
         image = Image(gallery=gallery, imbo_id=result['imageIdentifier'], width=result['width'], height=result['height'])
         DBSession.add(image)

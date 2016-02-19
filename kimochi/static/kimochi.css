@@ -104,7 +104,7 @@ nav>ol>li
     display: none;
 }
 
-#gallery-file-uploader
+#gallery-file-uploader, .drag-and-drop-upload-destination
 {
     margin-top: 1.0em;
     padding: 2.0em;
@@ -274,4 +274,9 @@ ol.page-section-list-empty
     margin-top: 2.0em;
     border-top: 2px solid #efefef;
     padding-top: 2.0em;
+}
+
+ol.page-section-list>li img
+{
+    max-width: 100%;
 }

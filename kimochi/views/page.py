@@ -7,12 +7,15 @@ from pyramid.httpexceptions import (
     HTTPFound,
     HTTPSeeOther,
     HTTPNotFound,
+    HTTPServiceUnavailable,
 )
 
 from ..models import (
     Site,
     Page,
+    Image,
     PageSection,
+    PageSectionImage,
     Gallery,
     DBSession,
     )
@@ -117,16 +120,36 @@ def site_page_update(request):
                 'success': True,
             }
 
-        valid_section_types = ['text', 'gallery', 'two_columns']
-        valid_section_types_parent = ['two_columns']
-
         if 'toggle_published' in request.POST:
             page.published = not page.published
 
             return HTTPSeeOther(
                 location=request.current_route_url()
             )
-        elif 'add_section_type' in request.POST and request.POST.getone('add_section_type') in valid_section_types:
+        elif 'file' in request.POST and getattr(request.POST['file'], 'file') and 'page_section_id' in request.GET:
+            page_section = PageSection.get_from_page_id_and_page_section_id(page.id, request.GET.getone('page_section_id'))
+
+            if not page_section:
+                return HTTPBadRequest
+
+            result = request.imbo.add_image_from_string(request.POST['file'].file)
+
+            if not result or 'imageIdentifier' not in result:
+                return HTTPServiceUnavailable()
+
+            if 'command' in request.GET and request.GET.getone('command') == 'replace_images' and request.POST.getone('is_first') == "1":
+                page_section.images = []
+
+            image = Image(imbo_id=result['imageIdentifier'], width=result['width'], height=result['height'], site=site)
+            DBSession.add(image)
+            DBSession.flush()
+
+            psi = PageSectionImage()
+            psi.image = image
+
+            page_section.images.append(psi)
+            return image
+        elif 'add_section_type' in request.POST and PageSection.is_valid_type(request.POST.getone('add_section_type')):
             section_type = request.POST.getone('add_section_type')
 
             if section_type == 'two_columns':
@@ -144,7 +167,7 @@ def site_page_update(request):
                     if parent_section.page_id != page.id:
                         raise HTTPBadRequest
 
-                    if parent_section.type not in valid_section_types_parent:
+                    if not PageSection.is_valid_parent_type(parent_section.type):
                         raise HTTPBadRequest
 
                     if 'parent_sub_section_idx' in request.POST:

@@ -2,12 +2,16 @@
 
 <script src="//tinymce.cachefly.net/4.2/tinymce.min.js"></script>
 
+<form method="post">
+    <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
+    <input type="submit" value="${'Published and live' if page.published else 'Not published'}" class="btn ${'btn-primary' if page.published else 'btn-default active'} btn-lg" style="float: right; margin-left: 2.0em;" name="toggle_published" />
+</form>
+
 <form method="post" id="save-layout-form">
     <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
 
     <h3 class="top">
         <input type="submit" value="Save" class="btn btn-default" name="save" style="margin-left: 2.0em; float: right;"/>
-        <input type="submit" value="${'Published and live' if page.published else 'Not published'}" class="btn ${'btn-primary' if page.published else 'btn-default active'} btn-lg" style="float: right; margin-left: 2.0em;" name="toggle_published" />
         Editing Page: ${page.name}
     </h3>
 
@@ -129,4 +133,10 @@
     });
 
     $(".page-section-list").not(":has(li)").addClass('page-section-list-empty');
+
+    // image handling
+    $(".image-action-button").click(function () {
+        var id_to_show = $(this).data('show-id');
+        $("#" + id_to_show).toggle();
+    });
 </script>
