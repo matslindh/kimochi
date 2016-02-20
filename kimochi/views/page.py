@@ -121,8 +121,6 @@ def site_page_update(request):
                     # purifier here?
                     section.content = section_data['content']
 
-                position += 1
-
             return {
                 'success': True,
             }
