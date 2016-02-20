@@ -143,7 +143,7 @@ class PageSection(Base):
     images = relationship('PageSectionImage', cascade="save-update, merge, delete, delete-orphan")
 
     parent_section_id = Column(Integer, ForeignKey('pages_sections.id'))
-    sections = relationship("PageSection")
+    sections = relationship("PageSection", order_by='PageSection.order')
 
     def __json__(self, request):
         return {
@@ -173,7 +173,7 @@ class PageSection(Base):
 
     @classmethod
     def is_valid_parent_type(cls, section_type):
-        return section_type in ('two_columns', )
+        return section_type in ('two_columns', 'container', )
 
     @classmethod
     def create_two_columns(cls, page):

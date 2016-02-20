@@ -107,19 +107,42 @@ def site_page_update(request):
             if 'sections' not in data or not isinstance(data['sections'], collections.Iterable):
                 raise HTTPBadRequest
 
-            # loop through the sections and write content
+            def section_parser(sections, depth=1):
+                # avoid stack overflow
+                if depth > 2:
+                    return
+
+                if not len(sections) or not isinstance(sections, collections.Iterable):
+                    return
+
+                for position, section_data in enumerate(sections):
+                    import pprint
+                    pprint.pprint(section_data)
+                    section = PageSection.get_from_page_id_and_page_section_id(page.id, section_data['section_id'])
+
+                    if not section:
+                        raise HTTPBadRequest
+
+                    if 'parent_section_id' in section_data:
+                        parent_section_local = PageSection.get_from_page_id_and_page_section_id(page.id, section_data['parent_section_id'])
+
+                        if not parent_section_local or not PageSection.is_valid_parent_type(parent_section_local.type):
+                            raise HTTPBadRequest
+
+                        section.parent_section_id = parent_section_local.id
+
+                    section.order = position
+
+                    if section.type == 'text' and 'content' in section_data:
+                        # purifier here?
+                        section.content = section_data['content']
+
+                    if 'sections' in section_data:
+                        section_parser(section_data['sections'], depth + 1)
+
+            # loop through the sections and update content + positions
             # galleries / images usually update live, so we just do text for now..
-            for position, section_data in enumerate(data['sections']):
-                section = PageSection.get_from_page_id_and_page_section_id(page.id, section_data['section_id'])
-
-                if not section:
-                    raise HTTPBadRequest
-
-                section.order = position
-
-                if section.type == 'text' and 'content' in section_data:
-                    # purifier here?
-                    section.content = section_data['content']
+            section_parser(data['sections'])
 
             return {
                 'success': True,
@@ -164,12 +187,9 @@ def site_page_update(request):
 
                 if 'parent_section_id' in request.POST and request.POST['parent_section_id']:
                     parent_section_id = request.POST.getone('parent_section_id')
-                    parent_section = PageSection.get_from_id(parent_section_id)
+                    parent_section = PageSection.get_from_page_id_and_page_section_id(page.id, parent_section_id)
 
                     if not parent_section:
-                        raise HTTPBadRequest
-
-                    if parent_section.page_id != page.id:
                         raise HTTPBadRequest
 
                     if not PageSection.is_valid_parent_type(parent_section.type):

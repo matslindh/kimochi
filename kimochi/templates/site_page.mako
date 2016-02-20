@@ -27,24 +27,44 @@
 </div>
 
 <script type="text/javascript">
-    var serialize_section_contents = function () {
+    var serialize_section_list = function (sections_in) {
         var sections = []
-        var section_data = {}
 
-        $(".page-section-element").each(function (idx) {
+        sections_in.each(function (idx) {
             var section = {
                 'section_id': $(this).data('section-id'),
-                'type': $(this).data('section-type')
+                'type': $(this).data('section-type'),
+                'sections': []
             }
 
-            $(this).find(".section-form-element").each(function (idx) {
+            var parent_section_element = $(this).closest('[data-parent-section-id]');
+
+            if (parent_section_element.data('parent-section-id')) {
+                section['parent_section_id'] = parent_section_element.data('parent-section-id');
+            }
+
+            $(this).children(".section-type-container").children(".section-form-element").each(function (idx) {
                 var el = $(this);
                 var name = el.attr('name');
                 section[name] = el.val();
             });
 
-            sections.push(section)
+            // this will match any selectors further down the tree as well, but we're currently only doing two
+            // levels of layouts, so we should be good. for now.
+            var subsections = $(this).find("ol.page-section-list>li");
+
+            if (subsections.size() > 0) {
+                section['sections'] = serialize_section_list(subsections);
+            }
+
+            sections.push(section);
         });
+
+        return sections;
+    }
+
+    var serialize_section_contents = function () {
+        var sections = serialize_section_list($("#page-section-list>li.page-section-element"));
 
         console.log(sections);
 

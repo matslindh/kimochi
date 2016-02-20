@@ -5,9 +5,9 @@
         <div class="col-sm-1">
         </div>
         <div class="col-sm-5">
-            <ol class="page-section-list" id="two-columns-left-${section.id}">
+            <ol class="page-section-list" id="two-columns-left-${section.id}" data-parent-section-id="${section.sections[0].id}">
                 % for _section in section.sections[0].sections:
-                    <li>
+                    <li data-section-id="${_section.id}" data-section-type="${_section.type}" class="page-section-element">
                         <div style="overflow: hidden; margin-bottom: 1.0em;">
                             <div class="sort-handle">☰</div>
                         </div>
@@ -24,9 +24,9 @@
         <div class="col-sm-1">
         </div>
         <div class="col-sm-5">
-            <ol class="page-section-list" id="two-columns-right-${section.id}">
+            <ol class="page-section-list" id="two-columns-right-${section.id}" data-parent-section-id="${section.sections[1].id}">
                 % for _section in section.sections[1].sections:
-                    <li>
+                    <li data-section-id="${_section.id}" data-section-type="${_section.type}" class="page-section-element">
                         <div style="overflow: hidden; margin-bottom: 1.0em;">
                             <div class="sort-handle">☰</div>
                         </div>
