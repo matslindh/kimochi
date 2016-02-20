@@ -26,6 +26,9 @@ from pyramid.security import (
 
 from pyramid.renderers import render
 
+import collections
+
+
 @view_config(route_name='site_pages', request_method='POST', check_csrf=True)
 def site_pages(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
@@ -100,21 +103,25 @@ def site_page_update(request):
             except:
                 raise HTTPBadRequest
 
-            if 'sections' not in data or not isinstance(data['sections'], dict):
+            # verify that the submitted json is iterable
+            if 'sections' not in data or not isinstance(data['sections'], collections.Iterable):
                 raise HTTPBadRequest
 
             # loop through the sections and write content
             # galleries / images usually update live, so we just do text for now..
-            for section_id in data['sections']:
-                submitted = data['sections'][section_id]
-                section = PageSection.get_from_page_id_and_page_section_id(page.id, section_id)
+            for position, section_data in enumerate(data['sections']):
+                section = PageSection.get_from_page_id_and_page_section_id(page.id, section_data['section_id'])
 
                 if not section:
                     raise HTTPBadRequest
 
-                if section.type == 'text' and 'content' in submitted:
+                section.order = position
+
+                if section.type == 'text' and 'content' in section_data:
                     # purifier here?
-                    section.content = submitted['content']
+                    section.content = section_data['content']
+
+                position += 1
 
             return {
                 'success': True,

@@ -1,5 +1,5 @@
 <%page args="section" />
-<li data-section-id="${section.id}">
+<li data-section-id="${section.id}" data-section-type="${section.type}" class="page-section-element">
     <div style="overflow: hidden; margin-bottom: 1.0em;">
         <div class="sort-handle">☰</div>
 

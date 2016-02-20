@@ -28,24 +28,27 @@
 
 <script type="text/javascript">
     var serialize_section_contents = function () {
+        var sections = []
         var section_data = {}
 
-        $(".section-form-element").each(function (idx) {
-            var el = $(this);
-            var section_id = el.data('section-id');
-            var section_type = el.data('section-type');
-            var name = el.attr('name');
-
-            if (!section_data.hasOwnProperty(section_id)) {
-                section_data[section_id] = {
-                    type: section_type
-                }
+        $(".page-section-element").each(function (idx) {
+            var section = {
+                'section_id': $(this).data('section-id'),
+                'type': $(this).data('section-type')
             }
 
-            section_data[section_id][name] = el.val();
+            $(this).find(".section-form-element").each(function (idx) {
+                var el = $(this);
+                var name = el.attr('name');
+                section[name] = el.val();
+            });
+
+            sections.push(section)
         });
 
-        return JSON.stringify({sections: section_data});
+        console.log(sections);
+
+        return JSON.stringify({sections: sections});
     };
 
     $("#save-layout-form").submit(function () {
