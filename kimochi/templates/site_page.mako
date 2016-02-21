@@ -135,7 +135,18 @@
             {
                 // $("#gallery-save-button").addClass("btn-primary");
             };
-        }
+
+          $(evt.item).find('textarea').each(function () {
+             tinymce.execCommand('mceRemoveEditor', false, $(this).attr('id'));
+          });
+
+          $(evt.item).find('textarea').each(function () {
+             tinymce.execCommand('mceAddEditor', true, $(this).attr('id'));
+          });
+        },
+        onStart: function (evt) {
+            console.log($(evt.dragged).find('textarea'));
+        },
     });
 
     $(document).ready(function () {

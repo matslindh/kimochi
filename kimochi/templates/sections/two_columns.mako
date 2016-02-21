@@ -60,6 +60,14 @@
                     // $("#gallery-save-button").addClass("btn-primary");
                 };
 
+                $(evt.item).find('textarea').each(function () {
+                    tinymce.execCommand('mceRemoveEditor', false, $(this).attr('id'));
+                });
+
+                $(evt.item).find('textarea').each(function () {
+                    tinymce.execCommand('mceAddEditor', true, $(this).attr('id'));
+                });
+
                 $(".page-section-list").removeClass('page-section-list-empty');
                 $(".page-section-list").not(":has(li)").addClass('page-section-list-empty');
             }
