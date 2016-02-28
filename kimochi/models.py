@@ -196,6 +196,19 @@ class PageSection(Base):
         return two_columns
 
 
+class PageSectionLayoutSetting(Base):
+    __tablename__ = 'pages_sections_layout_settings'
+
+    page_section_id = Column(Integer, ForeignKey('pages_sections.id'), nullable=False, index=True, primary_key=True)
+    page_section = relationship('PageSection', backref='layout_settings')
+
+    setting = Column(Text(length=40), nullable=False, primary_key=True)
+    value = Column(Text(length=200))
+
+    image_id = Column(Integer, ForeignKey('images.id'), nullable=True)
+    image = relationship('Image')
+
+
 class PageSectionImage(Base):
     __tablename__ = 'pages_sections_images'
 
@@ -485,6 +498,16 @@ class SiteAspectRatio(Base):
 
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
     site = relationship('Site')
+
+
+class SiteSetting(Base):
+    __tablename__ = 'sites_settings'
+
+    site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, primary_key=True)
+    site = relationship('Site', backref='settings')
+
+    setting = Column(Text(length=40), nullable=False, primary_key=True)
+    value = Column(Text(length=200), nullable=False)
 
 
 class User(Base):
