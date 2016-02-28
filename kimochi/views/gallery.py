@@ -26,6 +26,7 @@ from pyramid.security import (
 
 from pyramid.session import check_csrf_token
 
+
 @view_config(route_name='site_galleries', renderer='kimochi:templates/site_galleries.mako')
 def site_galleries(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
@@ -44,6 +45,7 @@ def site_galleries(request):
         'site': site,
     }
 
+
 @view_config(route_name='site_gallery', renderer='kimochi:templates/site_gallery.mako')
 def site_gallery(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
@@ -56,6 +58,7 @@ def site_gallery(request):
         'site': site,
         'gallery': gallery,
     }
+
 
 @view_config(route_name='site_gallery_images', request_method='POST', renderer='json')
 def site_gallery_images(request):
@@ -92,6 +95,7 @@ def site_gallery_images(request):
 
     return HTTPBadRequest()
 
+
 @view_config(route_name='site_gallery_image', renderer='kimochi:templates/site_gallery_image.mako')
 def site_gallery_image(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
@@ -127,6 +131,7 @@ def site_gallery_image(request):
         'gallery': gallery,
         'image': image,
     }
+
 
 @view_config(route_name='site_gallery_image_variation', renderer='kimochi:templates/site_gallery_image_variation.mako')
 def site_gallery_image_variation(request):
