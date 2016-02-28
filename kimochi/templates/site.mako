@@ -31,7 +31,7 @@
         <p class="option-description">
             Optional. Used as an extension / together with the site title if provided.
         </p>
-        <input type="text" name="site_tagline" class="form-control" value="${site.tagline}" id="site-tagline-field" placeholder="Optional tag line of site" />
+        <input type="text" name="site_tagline" class="form-control" value="${site.tagline if site.tagline else ''}" id="site-tagline-field" placeholder="Optional Site Tag Line" />
     </div>
 
 
@@ -40,7 +40,7 @@
         <p class="option-description">
             Used as the default description of the site for search engines etc. Should not exceed 160 characters.
         </p>
-        <textarea name="site_meta_description" rows="2" class="form-control" value="" id="site-metadescription-field" placeholder="Optional site wide metadescription">${site.meta_description}</textarea>
+        <textarea name="site_meta_description" rows="2" class="form-control" value="" id="site-metadescription-field" placeholder="Optional Description of Site for Search Engines">${site.meta_description if site.meta_description else ''}</textarea>
     </div>
 
     <button class="btn">
