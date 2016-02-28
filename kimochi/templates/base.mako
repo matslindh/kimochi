@@ -13,6 +13,9 @@
         <script src="${request.static_url('kimochi:static/jquery.color-2.1.2.min.js')}"></script>
         <script type="text/javascript" src="${request.static_url('kimochi:static/dropzone.js')}"></script>
         <script type="text/javascript" src="${request.static_url('kimochi:static/utilities.js')}"></script>
+        <script type="text/javascript">
+            Dropzone.autoDiscover = false;
+        </script>
 
         <title>Kimochi</title>
     </head>
