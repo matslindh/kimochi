@@ -93,11 +93,15 @@
         return false;
     });
 
+    var get_section_id_from_element = function (el) {
+        return el.closest("li[data-section-id]").data("section-id");
+    };
+
     $(document).on("click", "button.btn-section-create", function () {
         // collapse the dropup
         $(this).closest(".btn-group-new-section").find(".dropdown-toggle").dropdown('toggle');
 
-        var parent_section_id = $(this).closest("li[data-section-id]").data("section-id");
+        var parent_section_id = get_section_id_from_element($(this));
         var parent_sub_section_idx = $(this).closest("[data-add-sub-section-index]").data("add-sub-section-index");
 
         if (!parent_section_id) {
