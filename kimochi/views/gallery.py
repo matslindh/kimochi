@@ -72,12 +72,12 @@ def site_gallery_images(request):
         sequence = [int(id) for id in request.POST.getall('s[]')]
         image_ids = {image.id: image for image in gallery.images}
 
-        for id in sequence:
-            if id not in image_ids:
+        for image_id in sequence:
+            if image_id not in image_ids:
                 return HTTPBadRequest()
 
-        for idx, id in enumerate(sequence):
-            image_ids[id].order = idx + 1
+        for idx, image_id in enumerate(sequence):
+            image_ids[image_id].order = idx + 1
 
         return HTTPNoContent()
 
@@ -87,7 +87,7 @@ def site_gallery_images(request):
         if not result or 'imageIdentifier' not in result:
             return HTTPServerError()
 
-        image = Image(gallery=gallery, imbo_id=result['imageIdentifier'], width=result['width'], height=result['height'])
+        image = Image(gallery=gallery, imbo_id=result['imageIdentifier'], width=result['width'], height=result['height'], site=site)
         DBSession.add(image)
         DBSession.flush()
 
