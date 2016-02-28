@@ -40,11 +40,13 @@ import random
 import string
 import datetime
 
+
 def epoch():
     return calendar.timegm(time.gmtime())
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
+
 
 class Page(Base):
     __tablename__ = 'pages'
@@ -113,6 +115,7 @@ class Page(Base):
 
     def get_page_section(self, page_section_id):
         return PageSection.get_from_page_id_and_page_section_id(self.id, page_section_id)
+
 
 class PageAlias(Base):
     __tablename__ = 'pages_aliases'
@@ -225,6 +228,7 @@ class Gallery(Base):
     def get_from_site_id_and_gallery_id(cls, site_id, gallery_id):
         return DBSession.query(cls).filter(cls.site_id == site_id, cls.id == gallery_id).first()
 
+
 class Image(Base):
     __tablename__ = 'images'
 
@@ -324,6 +328,7 @@ class Image(Base):
             'previous': image_prev,
         }
 
+
 class ImageVariation(Base):
     __tablename__ = 'images_variations'
 
@@ -349,6 +354,7 @@ UserSiteTable = Table('users_sites', Base.metadata,
                       Column('user_id', Integer, ForeignKey('users.id'), nullable=False, index=True, primary_key=True),
                       Column('site_id', Integer, ForeignKey('sites.id'), nullable=False, index=True, primary_key=True)
                       )
+
 
 class Site(Base):
     __tablename__ = 'sites'
@@ -440,6 +446,7 @@ class Site(Base):
 
         raise NoAccessException
 
+
 class SiteAPIKey(Base):
     __tablename__  = 'sites_api_keys'
     __key_length__ = 32
@@ -529,6 +536,7 @@ class RootFactory:
     def __init__(self, request):
         pass
 
+
 class APIRootFactory:
     __acl__ = [
         (Allow, Everyone, 'api')
@@ -537,11 +545,14 @@ class APIRootFactory:
     def __init__(self, request):
         pass
 
+
 class NotFoundException(BaseException):
     pass
 
+
 class NoAccessException(BaseException):
     pass
+
 
 def replace_placeholders(text):
     return text.replace("%YEAR%", str(datetime.datetime.now().year))
