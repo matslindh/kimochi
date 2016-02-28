@@ -9,7 +9,7 @@
         menubar: false,
         statusbar: false,
         selector: '#text_${section.id}',
-        valid_styles: { '*' : 'color,font-weight,font-style,text-decoration' },
+        valid_styles: { '*' : 'color,font-weight,font-style,text-decoration,text-align' },
         content_css: "${request.static_url('kimochi:static/tinymce.css')}"
         // plugins: "autoresize"
     });
