@@ -116,8 +116,6 @@ def site_page_update(request):
                     return
 
                 for position, section_data in enumerate(sections):
-                    import pprint
-                    pprint.pprint(section_data)
                     section = PageSection.get_from_page_id_and_page_section_id(page.id, section_data['section_id'])
 
                     if not section:
