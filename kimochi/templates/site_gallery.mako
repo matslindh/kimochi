@@ -51,6 +51,7 @@
 </form>
 
 <script type="text/javascript">
+% if gallery.images:
     var sortable = new Sortable(document.getElementById('gallery-images'), {
         handle: '.sort-handle',
         ghostClass: 'sort-ghost',
@@ -62,6 +63,7 @@
             };
         }
     });
+% endif
 
     var save = function () {
         var ids = []
