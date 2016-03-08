@@ -84,7 +84,7 @@
     $("#gallery-save").submit(save);
 
     $(".dropzone").dropzone({
-        "url": "${request.current_route_url()}",
+        "url": "${request.current_route_url(_route_name='site_gallery_images')}",
         "headers": { "X-CSRF-Token": "${request.session.get_csrf_token()}" }
     });
 </script>
