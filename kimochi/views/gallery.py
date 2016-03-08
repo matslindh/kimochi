@@ -87,7 +87,10 @@ def site_gallery_images(request):
         if not result or 'imageIdentifier' not in result:
             return HTTPServerError()
 
-        image = Image(gallery=gallery, imbo_id=result['imageIdentifier'], width=result['width'], height=result['height'], site=site)
+        min_order_value = gallery.lowest_order() - 1
+
+        image = Image(gallery=gallery, imbo_id=result['imageIdentifier'], width=result['width'],
+                      height=result['height'], site=site, order=min_order_value)
         DBSession.add(image)
         DBSession.flush()
 
