@@ -104,20 +104,6 @@ nav>ol>li
     display: none;
 }
 
-#gallery-file-uploader, .drag-and-drop-upload-destination
-{
-    margin-top: 1.0em;
-    padding: 2.0em;
-    text-align: center;
-    border: 1px dotted #ccc;
-}
-
-.dz-message
-{
-    color: #aaa;
-    font-size: 1.4em;
-}
-
 .sort-handle:hover
 {
     cursor: move;
@@ -279,4 +265,95 @@ ol.page-section-list-empty
 ol.page-section-list>li img
 {
     max-width: 100%;
+}
+
+/* Uploads */
+#gallery-file-uploader, .drag-and-drop-upload-destination
+{
+    margin-top: 1.0em;
+    margin-bottom: 1.0em;
+    padding: 2.0em;
+    text-align: center;
+    border: 1px dotted #ccc;
+}
+
+.dz-message
+{
+    color: #aaa;
+    font-size: 1.4em;
+}
+
+.dz-error-mark, .dz-success-mark
+{
+    display: none;
+}
+
+.dz-details {
+    color: #888;
+    text-align: left;
+    font-size: 0.8em;
+}
+
+.dz-image
+{
+    float: left;
+    width: 75px;
+    margin-right: 25px;
+    text-align: left;
+}
+
+.dz-image img
+{
+    max-width: 75px;
+    max-height: 75px;
+}
+
+.dz-details .dz-size
+{
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+}
+
+.dz-details .dz-filename
+{
+    position: absolute;
+    bottom: 2px;
+    right: 120px;
+}
+
+.dz-preview
+{
+    position: relative;
+    overflow: hidden;
+    margin-top: 1.0em;
+    padding: 4px;
+    border: 1px solid transparent;
+}
+
+.dz-progress {
+    border: 1px solid #ccc;
+    padding: 2px;
+    text-align: left;
+    height: 0.8em;
+    margin-left: 100px;
+}
+
+.dz-progress .dz-upload
+{
+    background: #515E5F;
+    height: 100%;
+    display: block;
+}
+
+.dz-processing {
+    border-color: #222;
+}
+
+.dz-complete {
+    opacity: 0.2;
+}
+
+.dz-error {
+    background: #ffcccc;
 }
