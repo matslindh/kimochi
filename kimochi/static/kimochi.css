@@ -5,11 +5,13 @@ body {
 }
 
 header div h1 {
-    color: #4AD9D9;
-    text-shadow: 1px 1px 3px #888;
-    font-family: 'Shadows Into Light', cursive;
+    color: #DBE5E0;
+    font-family: 'Raleway', sans-serif;
     font-size: 3.0em;
     margin: 0;
+    border-bottom: 3px solid #8A0917;
+    margin-bottom: 12px;
+    margin-top: 8px;
     display: inline-block;
 }
 
@@ -45,7 +47,7 @@ header>div {
 }
 
 header {
-    background: #E9F1DF;
+    background: #2A2C2B;
 }
 
 footer {
