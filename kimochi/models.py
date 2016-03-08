@@ -19,6 +19,8 @@ from sqlalchemy.orm import (
     validates,
     )
 
+from sqlalchemy.sql.expression import func
+
 from sqlalchemy_utils.types.password import (
     PasswordType
 )
@@ -236,6 +238,9 @@ class Gallery(Base):
             'name': self.name,
             'images': self.images,
         }
+
+    def lowest_order(self):
+        return DBSession.query(func.min(Image.order)).filter(Image.gallery_id == self.id).scalar()
 
     @classmethod
     def get_from_site_id_and_gallery_id(cls, site_id, gallery_id):
