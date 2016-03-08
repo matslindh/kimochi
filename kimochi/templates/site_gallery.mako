@@ -15,6 +15,14 @@
     % endfor
 % endif
 
+<form action="${request.current_route_url(_route_name='site_gallery_images')}" class="dropzone" id="gallery-file-uploader">
+    <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
+
+    <div class="dz-message">
+        Drop images here to add them to the gallery
+    </div>
+</form>
+
 % if gallery.images:
     <ol id="gallery-images" class="listed">
         % for image in gallery.images:
@@ -41,14 +49,6 @@
 % else:
     Gallery is empty. Add some images!
 % endif
-
-<form action="${request.current_route_url(_route_name='site_gallery_images')}" class="dropzone" id="gallery-file-uploader">
-    <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
-
-    <div class="dz-message">
-        Drop images here to add them to the gallery
-    </div>
-</form>
 
 <script type="text/javascript">
 % if gallery.images:
@@ -83,8 +83,11 @@
 
     $("#gallery-save").submit(save);
 
-    $(".dropzone").dropzone({
+    var dz = $(".dropzone").dropzone({
         "url": "${request.current_route_url(_route_name='site_gallery_images')}",
-        "headers": { "X-CSRF-Token": "${request.session.get_csrf_token()}" }
+        "headers": { "X-CSRF-Token": "${request.session.get_csrf_token()}" },
+        "queuecomplete": function () {
+            location.href = location.href;
+        }
     });
 </script>
