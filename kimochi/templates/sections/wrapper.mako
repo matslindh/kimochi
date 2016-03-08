@@ -6,6 +6,11 @@
         <div class="btn-group btn-group-sm" data-toggle="buttons" role="group" style="float: left;">
             ${section.type}
         </div>
+
+
+        <div class="btn btn-group" style="float: right;">
+            Options <span class="caret"></span>
+        </div>
     </div>
 
     <%include file="${section.type}.mako" args="section=section" />
