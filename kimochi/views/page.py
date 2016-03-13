@@ -77,9 +77,6 @@ def site_page_update(request):
         if not page_section:
             return HTTPNotFound()
 
-        if 'section_type' in request.POST and PageSection.is_valid_type(request.POST['section_type']):
-            page_section.type = request.POST['section_type']
-
         if 'section_content' in request.POST:
             page_section.content = request.POST['section_content']
 

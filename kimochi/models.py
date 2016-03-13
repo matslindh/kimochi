@@ -58,6 +58,7 @@ class Page(Base):
 
     # populated by @validates rule for name
     slug = Column(Text(length=80), nullable=True)
+
     published = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
 
