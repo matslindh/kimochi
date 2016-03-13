@@ -152,6 +152,18 @@
         },
     });
 
+    $(document).on("click", ".section-options-expander", function () {
+        var options_pane = $(this).closest(".page-section-element").find(".section-options");
+
+        options_pane.toggle();
+
+        if (options_pane.is(":visible")) {
+            $(this).find("span").removeClass("glyphicon-triangle-bottom").addClass("glyphicon-triangle-top");
+        } else {
+            $(this).find("span").removeClass("glyphicon-triangle-top").addClass("glyphicon-triangle-bottom");
+        }
+    });
+
     $(document).ready(function () {
         if (window.location.hash && (window.location.hash.substring(0, 14) == '#page-section-'))
         {

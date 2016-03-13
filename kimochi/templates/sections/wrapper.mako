@@ -8,8 +8,17 @@
         </div>
 
 
-        <div class="btn btn-group" style="float: right;">
-            Options <span class="caret"></span>
+        <div class="btn btn-group section-options-expander" style="float: right;">
+            Options <span class="glyphicon glyphicon-triangle-bottom"></span>
+        </div>
+    </div>
+
+    <div class="panel panel-default section-options">
+        <div class="panel-heading">
+            <h4 class="panel-title">Section Options</h4>
+        </div>
+        <div class="panel-body">
+
         </div>
     </div>
 
