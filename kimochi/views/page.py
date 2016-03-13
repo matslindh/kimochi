@@ -106,7 +106,7 @@ def site_page_update(request):
                 raise HTTPBadRequest
 
             def section_parser(sections, depth=1):
-                # avoid stack overflow
+                # avoid stack overflow (we currently allow only level of sections within sections)
                 if depth > 2:
                     return
 
