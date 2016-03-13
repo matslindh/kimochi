@@ -100,6 +100,10 @@ class Page(Base):
         return DBSession.query(cls).filter(cls.site_id == site_id, cls.deleted == False).all()
 
     @classmethod
+    def get_archived_from_site_id(cls, site_id):
+        return DBSession.query(cls).filter(cls.site_id == site_id, cls.deleted == True).all()
+
+    @classmethod
     def get_for_site_id_and_page_id(cls, site_id, page_id):
         return DBSession.query(cls).filter(cls.site_id == site_id, cls.id == page_id, cls.deleted == False).first()
 
@@ -134,7 +138,7 @@ class Page(Base):
         index = site.get_index_page()
 
         # we have no index or this page wasn't the index page anyway..
-        if index and index.id != self.id:
+        if index and index.id == self.id:
             # find next active page
             for page in site.pages_active():
                 if page.id != self.id:
@@ -464,6 +468,9 @@ class Site(Base):
 
     def pages_active(self):
         return Page.get_published_from_site_id(self.id)
+
+    def pages_archived(self):
+        return Page.get_archived_from_site_id(self.id)
 
     def pages_available(self):
         return Page.get_available_from_site_id(self.id)

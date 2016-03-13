@@ -76,6 +76,7 @@ def main(global_config, **settings):
     config.add_route('site_galleries', '/sites/{site_key}/galleries')
     config.add_route('site_page', '/sites/{site_key}/pages/{page_id}')
     config.add_route('site_pages', '/sites/{site_key}/pages')
+    config.add_route('site_pages_archived', '/sites/{site_key}/pages/archived')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
 

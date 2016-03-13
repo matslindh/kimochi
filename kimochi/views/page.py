@@ -46,9 +46,17 @@ def site_pages(request):
 @view_config(route_name='site_pages', request_method='GET', renderer='kimochi:templates/site_pages.mako')
 def site_pages_list(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    pages = site.pages_available()
+
+    if 'category' in request.GET:
+        category = request.GET.getone('category')
+
+        if category == 'archived':
+            pages = site.pages_archived()
 
     return {
         'site': site,
+        'pages': pages,
     }
 
 

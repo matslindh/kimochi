@@ -273,6 +273,16 @@ ol.page-section-list>li img
     margin-top: 2.0em;
 }
 
+small.header-filter
+{
+    float: right;
+}
+
+small.header-filter a
+{
+    margin-left: 2.0em;
+}
+
 /* Uploads */
 #gallery-file-uploader, .drag-and-drop-upload-destination
 {
