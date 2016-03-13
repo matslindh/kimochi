@@ -1,18 +1,11 @@
 <%inherit file="site_page_base.mako" />
-
-<script src="//tinymce.cachefly.net/4.2/tinymce.min.js"></script>
-
-<form method="post">
-    <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
-    <input type="submit" value="${'Published and live' if page.published else 'Not published'}" class="btn ${'btn-primary' if page.published else 'btn-default active'} btn-lg" style="float: right; margin-left: 2.0em;" name="toggle_published" />
-</form>
+<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
 
 <form method="post" id="save-layout-form">
     <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
 
     <h3 class="top">
-        <input type="submit" value="Save" class="btn btn-default" name="save" style="margin-left: 2.0em; float: right;"/>
-        Editing Page: ${page.name}
+        <input type="text" name="page_name" value="${page.name}" placeholder="Name of the page" size="35" class="form-control" />
     </h3>
 
     <ol class="page-section-list" id="page-section-list">
@@ -65,10 +58,10 @@
 
     var serialize_section_contents = function () {
         var sections = serialize_section_list($("#page-section-list>li.page-section-element"));
-
-        console.log(sections);
-
-        return JSON.stringify({sections: sections});
+        return JSON.stringify({
+            page_name: $("input[name=page_name]").val(),
+            sections: sections
+        });
     };
 
     $("#save-layout-form").submit(function () {
@@ -86,8 +79,9 @@
         .done(function (data) {
             console.log(data);
         })
-        .fail(function () {
-            console.log("failed serializing section data to server");
+        .fail(function (data) {
+            alert("failed serializing section data to server");
+            console.log(data);
         });
 
         return false;

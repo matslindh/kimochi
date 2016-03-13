@@ -102,6 +102,9 @@ def site_page_update(request):
             if 'sections' not in data or not isinstance(data['sections'], collections.Iterable):
                 raise HTTPBadRequest
 
+            if 'page_name' in data and data['page_name'] != page.name:
+                page.name = data['page_name']
+
             def section_parser(sections, depth=1):
                 # avoid stack overflow (we currently allow only level of sections within sections)
                 if depth > 2:
