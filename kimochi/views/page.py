@@ -55,9 +55,6 @@ def site_pages(request):
 def site_pages_list(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
 
-    if site.pages:
-        return HTTPFound(location=request.route_url('site_page', site_key=site.key, page_id=site.pages[0].id))
-
     return {
         'site': site,
     }
