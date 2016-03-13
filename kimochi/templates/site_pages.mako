@@ -17,9 +17,9 @@
     <tr>
         <th>Name</th>
     </tr>
-    % for page in site.pages:
+    % for page in site.pages_available():
         <tr>
-            <td>
+            <td class="text-muted">
                 <a href="${request.route_url('site_page', site_key=site.key, page_id=page.id)}">${page.name}</a>
             </td>
         </tr>

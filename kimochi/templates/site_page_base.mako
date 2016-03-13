@@ -30,7 +30,8 @@
         <div class="panel-body">
             <form method="post">
                 <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
-                <button class="btn btn-sm"><span class="glyphicon glyphicon-trash"></span> Archive this page</button>
+                <input type="hidden" name="archive_page" value="true" />
+                <button class="btn btn-sm" ><span class="glyphicon glyphicon-trash"></span> Archive this page</button>
             </form>
         </div>
     </div>

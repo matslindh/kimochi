@@ -83,6 +83,10 @@ class Page(Base):
         return DBSession.query(cls).filter(cls.site_id == site_id, cls.published == True, cls.deleted == False).all()
 
     @classmethod
+    def get_available_from_site_id(cls, site_id):
+        return DBSession.query(cls).filter(cls.site_id == site_id, cls.deleted == False).all()
+
+    @classmethod
     def get_for_site_id_and_page_id(cls, site_id, page_id):
         return DBSession.query(cls).filter(cls.site_id == site_id, cls.id == page_id, cls.deleted == False).first()
 
@@ -112,6 +116,23 @@ class Page(Base):
         pa.page = self
 
         DBSession.add(pa)
+
+    def archive(self, site=None):
+        if site:
+            index = site.get_index_page()
+
+            # we have no index or this page wasn't the index page anyway..
+            if not index or index.id != self.id:
+                return
+
+            # find next active page
+            for page in site.pages_active():
+                if page.id != self.id:
+                    site.set_default_index_page(page)
+                    break
+
+        self.published = False
+        self.deleted = True
 
     def get_sections_active(self):
         return PageSection.get_active_from_page_id(self.id)
@@ -429,6 +450,9 @@ class Site(Base):
 
     def pages_active(self):
         return Page.get_published_from_site_id(self.id)
+
+    def pages_available(self):
+        return Page.get_available_from_site_id(self.id)
 
     def set_default_index_page(self, page):
         Page.remove_alias_for_site(self.id, 'index')
