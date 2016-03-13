@@ -35,17 +35,9 @@ def site_pages(request):
 
     if 'page_name' in request.POST and len(request.POST['page_name'].strip()) > 0:
         first_page = not site.pages
-        page = Page(name=request.POST['page_name'].strip(), site=site, published=first_page)
-        DBSession.add(page)
-
-        page_section = PageSection(type='text', page=page, content='')
-        DBSession.add(page_section)
-
-        if first_page:
-            site.set_default_index_page(page)
+        page = Page.create(name=request.POST['page_name'].strip(), site=site, published=first_page)
 
         DBSession.flush()
-
         return HTTPSeeOther(location=request.route_url('site_page', site_key=site.key, page_id=page.id))
 
     return HTTPFound(location=request.route_url('site', site_key=site.key))

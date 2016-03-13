@@ -5,7 +5,7 @@
     <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
 
     <h3 class="top">
-        <input type="text" name="page_name" value="${page.name}" placeholder="Name of the page" size="35" class="form-control" />
+        <input type="text" name="page_name" value="${page.name}" placeholder="Name of the page" size="35" class="form-control input-lg" />
     </h3>
 
     <ol class="page-section-list" id="page-section-list">
@@ -77,7 +77,12 @@
             dataType: "json"
         })
         .done(function (data) {
-            console.log(data);
+            if (data['success']) {
+                location.href = location.href;
+            } else {
+                alert("success returned false from server. See console log.");
+                console.log(data)
+            }
         })
         .fail(function (data) {
             alert("failed serializing section data to server");

@@ -79,6 +79,19 @@ class Page(Base):
         return name
 
     @classmethod
+    def create(cls, site, set_as_index=False, **kwargs):
+        page = Page(site=site, **kwargs)
+        DBSession.add(page)
+
+        page_section = PageSection(type='text', page=page, content='')
+        DBSession.add(page_section)
+
+        if not site.pages or set_as_index:
+            site.set_default_index_page(page)
+
+        return page
+
+    @classmethod
     def get_published_from_site_id(cls, site_id):
         return DBSession.query(cls).filter(cls.site_id == site_id, cls.published == True, cls.deleted == False).all()
 
@@ -117,14 +130,11 @@ class Page(Base):
 
         DBSession.add(pa)
 
-    def archive(self, site=None):
-        if site:
-            index = site.get_index_page()
+    def archive(self, site):
+        index = site.get_index_page()
 
-            # we have no index or this page wasn't the index page anyway..
-            if not index or index.id != self.id:
-                return
-
+        # we have no index or this page wasn't the index page anyway..
+        if index and index.id != self.id:
             # find next active page
             for page in site.pages_active():
                 if page.id != self.id:
@@ -133,6 +143,10 @@ class Page(Base):
 
         self.published = False
         self.deleted = True
+
+        # create new default, empty page
+        if not site.pages_available():
+            Page.create(site=site, name="Default", published=True, set_as_index=True)
 
     def get_sections_active(self):
         return PageSection.get_active_from_page_id(self.id)

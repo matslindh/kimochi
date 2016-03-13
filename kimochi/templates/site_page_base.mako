@@ -18,7 +18,7 @@
         </div>
         <div class="panel-body">
             <form method="post">
-                <input type="submit" value="Update layout and text" class="btn btn-default save-layout-button" name="save" style="float: right;"/>
+                <input type="submit" value="Save layout and text" class="btn btn-default save-layout-button" name="save" style="float: right;"/>
             </form>
         </div>
     </div>
