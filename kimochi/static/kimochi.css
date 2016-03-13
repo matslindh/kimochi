@@ -283,6 +283,10 @@ small.header-filter a
     margin-left: 2.0em;
 }
 
+.section-options {
+    display: none;
+}
+
 /* Uploads */
 #gallery-file-uploader, .drag-and-drop-upload-destination
 {
