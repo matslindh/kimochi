@@ -50,6 +50,7 @@ def site_pages(request):
 
     return HTTPFound(location=request.route_url('site', site_key=site.key))
 
+
 @view_config(route_name='site_pages', request_method='GET', renderer='kimochi:templates/site_pages.mako')
 def site_pages_list(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
