@@ -35,30 +35,28 @@ def site_pages(request):
 
     if 'page_name' in request.POST and len(request.POST['page_name'].strip()) > 0:
         first_page = not site.pages
-        page = Page(name=request.POST['page_name'].strip(), site=site, published=first_page)
-        DBSession.add(page)
-
-        page_section = PageSection(type='text', page=page, content='')
-        DBSession.add(page_section)
-
-        if first_page:
-            site.set_default_index_page(page)
+        page = Page.create(name=request.POST['page_name'].strip(), site=site, published=first_page)
 
         DBSession.flush()
-
         return HTTPSeeOther(location=request.route_url('site_page', site_key=site.key, page_id=page.id))
 
     return HTTPFound(location=request.route_url('site', site_key=site.key))
 
+
 @view_config(route_name='site_pages', request_method='GET', renderer='kimochi:templates/site_pages.mako')
 def site_pages_list(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    pages = site.pages_available()
 
-    if site.pages:
-        return HTTPFound(location=request.route_url('site_page', site_key=site.key, page_id=site.pages[0].id))
+    if 'category' in request.GET:
+        category = request.GET.getone('category')
+
+        if category == 'archived':
+            pages = site.pages_archived()
 
     return {
         'site': site,
+        'pages': pages,
     }
 
 
@@ -76,9 +74,6 @@ def site_page_update(request):
 
         if not page_section:
             return HTTPNotFound()
-
-        if 'section_type' in request.POST and PageSection.is_valid_type(request.POST['section_type']):
-            page_section.type = request.POST['section_type']
 
         if 'section_content' in request.POST:
             page_section.content = request.POST['section_content']
@@ -107,8 +102,11 @@ def site_page_update(request):
             if 'sections' not in data or not isinstance(data['sections'], collections.Iterable):
                 raise HTTPBadRequest
 
+            if 'page_name' in data and data['page_name'] != page.name:
+                page.name = data['page_name']
+
             def section_parser(sections, depth=1):
-                # avoid stack overflow
+                # avoid stack overflow (we currently allow only level of sections within sections)
                 if depth > 2:
                     return
 
@@ -152,6 +150,13 @@ def site_page_update(request):
             return HTTPSeeOther(
                 location=request.current_route_url()
             )
+        elif 'archive_page' in request.POST:
+            page.archive(site)
+
+            return HTTPSeeOther(
+                location=request.route_url('site_pages', site_key=site.key)
+            )
+
         elif 'file' in request.POST and getattr(request.POST['file'], 'file') and 'page_section_id' in request.GET:
             page_section = PageSection.get_from_page_id_and_page_section_id(page.id, request.GET.getone('page_section_id'))
 
@@ -224,6 +229,11 @@ def site_page_update(request):
 def site_page(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
     page = Page.get_for_site_id_and_page_id(site.id, request.matchdict['page_id'])
+
+    if not page:
+        return HTTPSeeOther(
+            location=request.route_url('site_pages', site_key=site.key)
+        )
 
     return {
         'site': site,

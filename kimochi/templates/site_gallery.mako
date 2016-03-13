@@ -83,11 +83,21 @@
 
     $("#gallery-save").submit(save);
 
+    var error_occured = false;
+
     var dz = $(".dropzone").dropzone({
         "url": "${request.current_route_url(_route_name='site_gallery_images')}",
         "headers": { "X-CSRF-Token": "${request.session.get_csrf_token()}" },
         "queuecomplete": function () {
-            location.href = location.href;
+            if (!error_occured) {
+                location.href = location.href;
+            }
+        },
+        "error": function (file, message, xhr) {
+            error_occured = true;
+            var el = $(file.previewElement);
+            el.addClass('dz-error');
+            el.html(message);
         }
     });
 </script>
