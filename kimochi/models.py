@@ -469,7 +469,8 @@ class Site(Base):
             'pages': pages,
             'footer': {
                 'text': replace_placeholders(self.footer) if self.footer else '',
-            }
+            },
+            'settings': {s.setting: s.value for s in self.settings},
         }
 
     def api_key_generate(self):
@@ -486,6 +487,12 @@ class Site(Base):
     def get_index_page(self):
         return Page.get_for_site_id_and_page_alias(self.id, 'index')
 
+    def has_setting(self, key):
+        if self.setting_cached(key) is None:
+            return False
+
+        return True
+
     def pages_active(self):
         return Page.get_published_from_site_id(self.id)
 
@@ -499,6 +506,29 @@ class Site(Base):
         Page.remove_alias_for_site(self.id, 'index')
         page.add_alias('index')
         return True
+
+    def set_setting(self, key, value):
+        setting = SiteSetting.get_or_create_from_site_id_and_key(self.id, key)
+        setting.value = value
+        self.setting_cached(key, value)
+
+    def setting(self, key):
+        return self.setting_cached(key)
+
+    def setting_cached(self, key, new=None):
+        if not hasattr(self, '_settings_cache'):
+            self._settings_cache = {}
+
+            for setting in self.settings:
+                self._settings_cache[setting.setting] = setting.value
+
+        if new is not None:
+            self._settings_cache[key] = new
+
+        if key not in self._settings_cache:
+            return None
+
+        return self._settings_cache[key]
 
     @classmethod
     def get_from_key(cls, key):
@@ -580,6 +610,15 @@ class SiteSetting(Base):
     setting = Column(Text(length=40), nullable=False, primary_key=True)
     value = Column(Text(length=200), nullable=False)
 
+    @classmethod
+    def get_or_create_from_site_id_and_key(cls, site_id, key):
+        setting = DBSession.query(cls).filter(cls.setting == key).first()
+
+        if not setting:
+            setting = SiteSetting(site_id=site_id, setting=key)
+            DBSession.add(setting)
+
+        return setting
 
 class User(Base):
     __tablename__ = 'users'
