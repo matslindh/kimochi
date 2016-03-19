@@ -10,7 +10,8 @@
         statusbar: false,
         selector: '#text_${section.id}',
         valid_styles: { '*' : 'color,font-weight,font-style,text-decoration,text-align' },
-        content_css: "${request.static_url('kimochi:static/tinymce.css')}"
-        // plugins: "autoresize"
+        content_css: "${request.static_url('kimochi:static/tinymce.css')}",
+        toolbar: "undo redo | styleselect hr | bold italic fontsizeselect | forecolor backcolor removeformat | alignleft aligncenter alignright |  link unlink | ",
+        plugins: "hr link textcolor"
     });
 </script>
