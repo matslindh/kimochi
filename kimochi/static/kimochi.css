@@ -283,8 +283,14 @@ small.header-filter a
     margin-left: 2.0em;
 }
 
-.section-options {
+.section-options
+{
     display: none;
+}
+
+.gallery-delete-image-form
+{
+    float: right;
 }
 
 /* Uploads */

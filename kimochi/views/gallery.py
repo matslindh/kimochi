@@ -60,7 +60,7 @@ def site_gallery(request):
     }
 
 
-@view_config(route_name='site_gallery_images', request_method='POST', renderer='json')
+@view_config(route_name='site_gallery_images', request_method='POST', renderer='json', check_csrf=True)
 def site_gallery_images(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
     gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
@@ -103,8 +103,28 @@ def site_gallery_images(request):
     return HTTPBadRequest()
 
 
-@view_config(route_name='site_gallery_image', renderer='kimochi:templates/site_gallery_image.mako')
+@view_config(route_name='site_gallery_image', renderer='kimochi:templates/site_gallery_image.mako', request_method='GET')
 def site_gallery_image(request):
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
+
+    if not gallery:
+        return HTTPNotFound()
+
+    image = Image.get_from_gallery_id_and_image_id(gallery.id, request.matchdict['image_id'])
+
+    if not image:
+        return HTTPNotFound()
+
+    return {
+        'site': site,
+        'gallery': gallery,
+        'image': image,
+    }
+
+
+@view_config(route_name='site_gallery_image', renderer='kimochi:templates/site_gallery_image.mako', request_method='POST', check_csrf=True)
+def site_gallery_image_update(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
     gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
 
@@ -133,11 +153,11 @@ def site_gallery_image(request):
 
         return HTTPFound(location=request.current_route_url(_route_name='site_gallery'))
 
-    return {
-        'site': site,
-        'gallery': gallery,
-        'image': image,
-    }
+    if 'delete_image' in request.POST:
+        image.delete(request.imbo)
+        return HTTPFound(location=request.current_route_url(_route_name='site_gallery'))
+
+    return HTTPBadRequest()
 
 
 @view_config(route_name='site_gallery_image_variation', renderer='kimochi:templates/site_gallery_image_variation.mako')

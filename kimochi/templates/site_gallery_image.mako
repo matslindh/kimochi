@@ -2,6 +2,12 @@
 
 <h3 class="top">
     <a href="${request.current_route_url(_route_name='site_gallery')}">${gallery.name}</a> / ${image.title if image.title else 'Untitled image'}
+
+    <form method="post" class="gallery-delete-image-form">
+        <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}" />
+        <input type="hidden" name="delete_image" value="true" />
+        <button class="btn btn-sm"><span class="glyphicon glyphicon-trash"></span> Delete this image permanently</button>
+    </form>
 </h3>
 
 <section class="image-details">
@@ -35,3 +41,17 @@
         <input type="submit" id="gallery-save-button" value="Save" class="btn btn-primary" />
     </form>
 </section>
+
+<script type="text/javascript">
+    $(".gallery-delete-image-form button").click(function () {
+        if ($(this).data("already-clicked")) {
+            return true;
+        }
+
+        $(this).data("already-clicked", true);
+        $(this).addClass("btn-danger");
+        $(this).html("<span class='glyphicon glyphicon-ok'></span> Yes. Delete this image permanently.");
+
+        return false;
+    });
+</script>

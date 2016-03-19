@@ -87,12 +87,21 @@ def site_update(request):
         site.tagline = request.POST.getone('site_tagline')
         updated_details = True
 
+    if 'social_media_facebook' in request.POST:
+        site.set_setting('social_media_facebook', request.POST.getone('social_media_facebook'))
+        updated_details = True
+
+    if 'social_media_instagram' in request.POST:
+        site.set_setting('social_media_instagram', request.POST.getone('social_media_instagram'))
+        updated_details = True
+
     if updated_details:
         request.session.flash("Site details has been updated!")
 
     return HTTPSeeOther(
         location=request.current_route_url()
     )
+
 
 @view_config(route_name='site', renderer='kimochi:templates/site.mako')
 def site(request):

@@ -270,7 +270,11 @@ class Gallery(Base):
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
     site = relationship('Site', backref='galleries')
 
-    images = relationship('Image', backref='gallery', order_by="asc(Image.order), asc(Image.id)")
+    images = relationship('Image',
+                          backref='gallery',
+                          primaryjoin="and_(Gallery.id == Image.gallery_id, "
+                                      "Image.deleted == False)",
+                          order_by='asc(Image.order), asc(Image.id)', )
 
     def __json__(self, request):
         return {
@@ -291,7 +295,7 @@ class Image(Base):
     __tablename__ = 'images'
 
     id = Column(Integer, primary_key=True)
-    imbo_id = Column(Text(length=80))
+    imbo_id = Column(Text(length=80), index=True)
     width = Column(Integer, nullable=False)
     height = Column(Integer, nullable=False)
     order = Column(Integer, default=epoch)
@@ -344,6 +348,23 @@ class Image(Base):
 
         return data
 
+    def delete(self, imbo_client=None):
+        self.deleted = True
+
+        # remove the image from Imbo unless other Image objects reference the same image
+        # (this can happen if the id generation strategy in Imbo is based on a hash of the image)
+        if not self.other_images_has_imbo_id() and imbo_client:
+            imbo_client.delete_image(self.imbo_id)
+
+        # remove any PageSectionImage attached to this image
+        DBSession.query(PageSectionImage).filter(PageSectionImage.image_id == self.id).delete(synchronize_session=False)
+
+    def other_images_has_imbo_id(self):
+        C = type(self)
+        other_image = DBSession.query(C).filter(C.imbo_id == self.imbo_id, C.id != self.id).first()
+
+        return other_image is not None
+
     def variations_and_site_aspect_ratios(self, site_aspect_ratios):
         variations = {}
 
@@ -385,7 +406,6 @@ class Image(Base):
             'next': image_next,
             'previous': image_prev,
         }
-
 
 class ImageVariation(Base):
     __tablename__ = 'images_variations'
@@ -449,7 +469,8 @@ class Site(Base):
             'pages': pages,
             'footer': {
                 'text': replace_placeholders(self.footer) if self.footer else '',
-            }
+            },
+            'settings': {s.setting: s.value for s in self.settings},
         }
 
     def api_key_generate(self):
@@ -466,6 +487,12 @@ class Site(Base):
     def get_index_page(self):
         return Page.get_for_site_id_and_page_alias(self.id, 'index')
 
+    def has_setting(self, key):
+        if self.setting_cached(key) is None:
+            return False
+
+        return True
+
     def pages_active(self):
         return Page.get_published_from_site_id(self.id)
 
@@ -479,6 +506,29 @@ class Site(Base):
         Page.remove_alias_for_site(self.id, 'index')
         page.add_alias('index')
         return True
+
+    def set_setting(self, key, value):
+        setting = SiteSetting.get_or_create_from_site_id_and_key(self.id, key)
+        setting.value = value
+        self.setting_cached(key, value)
+
+    def setting(self, key):
+        return self.setting_cached(key)
+
+    def setting_cached(self, key, new=None):
+        if not hasattr(self, '_settings_cache'):
+            self._settings_cache = {}
+
+            for setting in self.settings:
+                self._settings_cache[setting.setting] = setting.value
+
+        if new is not None:
+            self._settings_cache[key] = new
+
+        if key not in self._settings_cache:
+            return None
+
+        return self._settings_cache[key]
 
     @classmethod
     def get_from_key(cls, key):
@@ -560,6 +610,15 @@ class SiteSetting(Base):
     setting = Column(Text(length=40), nullable=False, primary_key=True)
     value = Column(Text(length=200), nullable=False)
 
+    @classmethod
+    def get_or_create_from_site_id_and_key(cls, site_id, key):
+        setting = DBSession.query(cls).filter(cls.setting == key).first()
+
+        if not setting:
+            setting = SiteSetting(site_id=site_id, setting=key)
+            DBSession.add(setting)
+
+        return setting
 
 class User(Base):
     __tablename__ = 'users'
