@@ -270,7 +270,7 @@ class Gallery(Base):
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
     site = relationship('Site', backref='galleries')
 
-    images = relationship('Image', backref='gallery', order_by="asc(Image.order), asc(Image.id)")
+    images = relationship('Image', backref='gallery', order_by='asc(Image.order), asc(Image.id)')
 
     def __json__(self, request):
         return {
