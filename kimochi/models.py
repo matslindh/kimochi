@@ -270,7 +270,11 @@ class Gallery(Base):
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
     site = relationship('Site', backref='galleries')
 
-    images = relationship('Image', backref='gallery', order_by='asc(Image.order), asc(Image.id)')
+    images = relationship('Image',
+                          backref='gallery',
+                          primaryjoin="and_(Gallery.id == Image.gallery_id, "
+                                      "Image.deleted == False)",
+                          order_by='asc(Image.order), asc(Image.id)', )
 
     def __json__(self, request):
         return {
@@ -347,8 +351,13 @@ class Image(Base):
     def delete(self, imbo_client=None):
         self.deleted = True
 
+        # remove the image from Imbo unless other Image objects reference the same image
+        # (this can happen if the id generation strategy in Imbo is based on a hash of the image)
         if not self.other_images_has_imbo_id() and imbo_client:
             imbo_client.delete_image(self.imbo_id)
+
+        # remove any PageSectionImage attached to this image
+        DBSession.query(PageSectionImage).filter(PageSectionImage.image_id == self.id).delete(synchronize_session=False)
 
     def other_images_has_imbo_id(self):
         C = type(self)
