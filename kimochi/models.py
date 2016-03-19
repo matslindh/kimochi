@@ -291,7 +291,7 @@ class Image(Base):
     __tablename__ = 'images'
 
     id = Column(Integer, primary_key=True)
-    imbo_id = Column(Text(length=80))
+    imbo_id = Column(Text(length=80), index=True)
     width = Column(Integer, nullable=False)
     height = Column(Integer, nullable=False)
     order = Column(Integer, default=epoch)
@@ -344,6 +344,18 @@ class Image(Base):
 
         return data
 
+    def delete(self, imbo_client=None):
+        self.deleted = True
+
+        if not self.other_images_has_imbo_id() and imbo_client:
+            imbo_client.delete_image(self.imbo_id)
+
+    def other_images_has_imbo_id(self):
+        C = type(self)
+        other_image = DBSession.query(C).filter(C.imbo_id == self.imbo_id, C.id != self.id).first()
+
+        return other_image is not None
+
     def variations_and_site_aspect_ratios(self, site_aspect_ratios):
         variations = {}
 
@@ -385,7 +397,6 @@ class Image(Base):
             'next': image_next,
             'previous': image_prev,
         }
-
 
 class ImageVariation(Base):
     __tablename__ = 'images_variations'
