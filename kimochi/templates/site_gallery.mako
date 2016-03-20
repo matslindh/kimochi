@@ -29,7 +29,7 @@
             <li data-image-id="${image.id}">
                 <div class="sort-handle">☰</div>
 
-                <img src="${request.imbo.image_url(image.imbo_id).max_size(150, 100)}" alt="" style="float: left;" />
+                <a href="${request.current_route_url(_route_name='site_gallery_image', image_id=image.id)}"><img src="${request.imbo.image_url(image.imbo_id).max_size(150, 100)}" alt="" style="float: left;" /></a>
 
                 <div class="action-row">
                     <a href="${request.current_route_url(_route_name='site_gallery_image', image_id=image.id)}"><span class="glyphicon glyphicon-pencil"></span></a>
