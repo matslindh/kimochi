@@ -311,6 +311,9 @@ class Image(Base):
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=True, index=True)
     variations = relationship("ImageVariation")
 
+    parent_image = relationship('Image', backref='children', remote_side=[id])
+    parent_image_id = Column(Integer, ForeignKey('images.id'), nullable=True, index=True)
+
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
     site = relationship('Site', backref='images')
 
@@ -323,6 +326,7 @@ class Image(Base):
             'customer': self.customer,
             'link': self.link,
             'link_text': self.link_text,
+            'parent_image': self.parent_image if self.parent_image_id else None
         }
 
         if self.imbo_id:
@@ -389,7 +393,24 @@ class Image(Base):
 
     @classmethod
     def get_from_gallery_id_and_image_id(cls, gallery_id, image_id):
-        return DBSession.query(cls).filter(cls.gallery_id == gallery_id, cls.id == image_id).first()
+        image = DBSession.query(cls).filter(cls.id == image_id).first()
+
+        if not image:
+            return None
+
+        gallery_id = int(gallery_id)
+
+        if image.gallery_id:
+            if image.gallery_id == gallery_id:
+                return image
+
+            return None
+
+        # fallback if the image is an alternative image to the image in the gallery..
+        if image.parent_image and image.parent_image.gallery_id == gallery_id:
+            return image
+
+        return None
 
     @classmethod
     def get_from_site_id_and_image_id(cls, site_id, image_id):

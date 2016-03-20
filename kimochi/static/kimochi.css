@@ -181,6 +181,12 @@ section.image-details form
     margin-top: 1.0em;
 }
 
+.image-details .cropped-versions-list a
+{
+    margin-left: 1.0em;
+    margin-right: 1.0em;
+}
+
 .placeholder
 {
     color: #888;

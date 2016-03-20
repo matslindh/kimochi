@@ -25,6 +25,7 @@ from pyramid.security import (
 )
 
 from pyramid.session import check_csrf_token
+import time
 
 
 @view_config(route_name='site_galleries', renderer='kimochi:templates/site_galleries.mako')
@@ -123,7 +124,7 @@ def site_gallery_image(request):
     }
 
 
-@view_config(route_name='site_gallery_image', renderer='kimochi:templates/site_gallery_image.mako', request_method='POST', check_csrf=True)
+@view_config(route_name='site_gallery_image', renderer='json', request_method='POST', check_csrf=True)
 def site_gallery_image_update(request):
     site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
     gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
@@ -156,6 +157,19 @@ def site_gallery_image_update(request):
     if 'delete_image' in request.POST:
         image.delete(request.imbo)
         return HTTPFound(location=request.current_route_url(_route_name='site_gallery'))
+
+    if 'file' in request.POST and getattr(request.POST['file'], 'file') and not image.parent_image_id:
+        result = request.imbo.add_image_from_string(request.POST['file'].file)
+
+        if not result or 'imageIdentifier' not in result:
+            return HTTPServerError()
+
+        new_image = Image(parent_image=image, imbo_id=result['imageIdentifier'], width=result['width'],
+                          height=result['height'], site=site, order=int(time.time()))
+        DBSession.add(new_image)
+        DBSession.flush()
+
+        return new_image
 
     return HTTPBadRequest()
 

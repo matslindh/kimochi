@@ -64,14 +64,18 @@ class SiteAPI:
         if not image:
             raise HTTPNotFound
 
-        next_prev = Image.get_next_and_previous_from_image(image)
+        next_prev = {}
+
+        if not image.parent_image_id:
+            next_prev = Image.get_next_and_previous_from_image(image)
 
         return {
             'site': self.site,
             'gallery': gallery,
             'image': image,
-            'next': next_prev['next'],
-            'previous': next_prev['previous'],
+            'related': image.children,
+            'next': None if image.parent_image_id else next_prev['next'],
+            'previous': None if image.parent_image_id else next_prev['previous'],
         }
 
     def _current_gallery(self):
