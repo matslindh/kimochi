@@ -187,5 +187,7 @@
     $(".image-action-button").click(function () {
         var id_to_show = $(this).data('show-id');
         $("#" + id_to_show).toggle();
+
+        return false;
     });
 </script>
