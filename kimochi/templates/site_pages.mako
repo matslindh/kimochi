@@ -20,16 +20,51 @@
 </h2>
 
 <table class="table table-striped">
-    <tr>
-        <th>Name</th>
-    </tr>
-    % for page in pages:
+    <thead>
         <tr>
-            <td class="text-muted">
-                <a href="${request.route_url('site_page', site_key=site.key, page_id=page.id)}">${page.name}</a>
-            </td>
+            <th style="width: 1.0em;"></th>
+            <th>Name</th>
         </tr>
-    % endfor
+    </thead>
+    <tbody id="table-page-list">
+        % for page in pages:
+            <tr data-page-id="${page.id}">
+                <td>
+                    <div class="sort-handle">☰</div>
+                </td>
+                <td class="text-muted">
+                    <a href="${request.route_url('site_page', site_key=site.key, page_id=page.id)}">${page.name}</a>
+                </td>
+            </tr>
+        % endfor
+    </tbody>
 </table>
 
-Display a 1-2-3 stage tutorial for creating the first page here.
+<script type="text/javascript">
+    var sortable = new Sortable(document.getElementById('table-page-list'), {
+        handle: '.sort-handle',
+        draggable: 'tr',
+        ghostClass: 'sort-ghost',
+        animation: 100,
+        onEnd: function (evt) {
+            var ids = []
+            $("#table-page-list>tr").each(function (idx) {
+                ids.push($(this).data('page-id'));
+            });
+
+            if (evt.oldIndex != evt.newIndex)
+            {
+                var el = $(evt.item);
+
+                $.post('', {
+                    's': ids,
+                    'csrf_token': '${request.session.get_csrf_token()}'
+                }, function (data) {
+                    if (!data['result']) {
+                        $(el).addClass('bg-danger');
+                    }
+                });
+            };
+        }
+    });
+</script>

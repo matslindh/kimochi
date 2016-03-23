@@ -60,6 +60,26 @@ def site_pages_list(request):
     }
 
 
+@view_config(route_name='site_pages', request_method='POST', renderer='json', check_csrf=True, xhr=True)
+def site_pages_update(request):
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+
+    if 's[]' not in request.POST:
+        raise HTTPBadRequest
+
+    for idx, page_id in enumerate(request.POST.getall('s[]')):
+        page = Page.get_any_for_site_id_and_page_id(site.id, page_id)
+
+        if not page:
+            raise HTTPBadRequest
+
+        page.order = idx + 1
+
+    return {
+        'result': True,
+    }
+
+
 @view_config(route_name='site_page', request_method='POST', renderer='kimochi:templates/site_page.mako', check_csrf=True, xhr=False)
 @view_config(route_name='site_page', request_method='POST', renderer='json', check_csrf=True, xhr=True)
 def site_page_update(request):
