@@ -55,10 +55,12 @@ class Page(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Text(length=40))
+    order = Column(Integer, default=epoch)
 
     # populated by @validates rule for name
     slug = Column(Text(length=80), nullable=True)
 
+    hide_from_menu = Column(Boolean, default=False)
     published = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
 
