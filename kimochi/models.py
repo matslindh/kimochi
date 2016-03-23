@@ -55,10 +55,12 @@ class Page(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(Text(length=40))
+    order = Column(Integer, default=epoch)
 
     # populated by @validates rule for name
     slug = Column(Text(length=80), nullable=True)
 
+    hide_from_menu = Column(Boolean, default=False)
     published = Column(Boolean, default=False)
     deleted = Column(Boolean, default=False)
 
@@ -93,19 +95,23 @@ class Page(Base):
 
     @classmethod
     def get_published_from_site_id(cls, site_id):
-        return DBSession.query(cls).filter(cls.site_id == site_id, cls.published == True, cls.deleted == False).all()
+        return DBSession.query(cls).filter(cls.site_id == site_id, cls.published == True, cls.deleted == False).order_by('order').all()
 
     @classmethod
     def get_available_from_site_id(cls, site_id):
-        return DBSession.query(cls).filter(cls.site_id == site_id, cls.deleted == False).all()
+        return DBSession.query(cls).filter(cls.site_id == site_id, cls.deleted == False).order_by('order').all()
 
     @classmethod
     def get_archived_from_site_id(cls, site_id):
-        return DBSession.query(cls).filter(cls.site_id == site_id, cls.deleted == True).all()
+        return DBSession.query(cls).filter(cls.site_id == site_id, cls.deleted == True).order_by('order').all()
 
     @classmethod
     def get_for_site_id_and_page_id(cls, site_id, page_id):
         return DBSession.query(cls).filter(cls.site_id == site_id, cls.id == page_id, cls.deleted == False).first()
+
+    @classmethod
+    def get_any_for_site_id_and_page_id(cls, site_id, page_id):
+        return DBSession.query(cls).filter(cls.site_id == site_id, cls.id == page_id).first()
 
     @classmethod
     def get_for_site_id_and_page_alias(cls, site_id, alias):
