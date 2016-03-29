@@ -5,6 +5,7 @@ from pyramid.view import (
 from pyramid.httpexceptions import (
     HTTPBadRequest,
     HTTPSeeOther,
+    HTTPServerError,
 )
 
 from ..models import (
@@ -76,6 +77,15 @@ def site_setting_header_footer(request):
     if 'footer' in request.POST:
         site.footer = request.POST['footer'].strip()
         request.session.flash("Footer text has been updated!")
+
+    if 'file' in request.POST and getattr(request.POST['file'], 'file'):
+        result = request.imbo.add_image_from_string(request.POST['file'].file)
+
+        if not result or 'imageIdentifier' not in result:
+            return HTTPServerError()
+
+        site.header_imbo_id = result['imageIdentifier']
+        request.session.flash("Header image has been updated")
 
     return HTTPSeeOther(
         location=request.current_route_url()

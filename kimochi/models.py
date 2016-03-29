@@ -502,6 +502,9 @@ class Site(Base):
             'footer': {
                 'text': replace_placeholders(self.footer) if self.footer else '',
             },
+            'header': {
+                'image_url': str(request.imbo.image_url(self.header_imbo_id).max_size(1920, 1080)) if self.header_imbo_id else None,
+            },
             'settings': {s.setting: s.value for s in self.settings},
         }
 
