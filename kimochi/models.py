@@ -434,6 +434,7 @@ class Image(Base):
             'previous': image_prev,
         }
 
+
 class ImageVariation(Base):
     __tablename__ = 'images_variations'
 
@@ -646,6 +647,7 @@ class SiteSetting(Base):
             DBSession.add(setting)
 
         return setting
+
 
 class User(Base):
     __tablename__ = 'users'
