@@ -317,7 +317,11 @@ class Image(Base):
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=True, index=True)
     variations = relationship("ImageVariation")
 
-    parent_image = relationship('Image', backref='children', remote_side=[id])
+    parent_image = relationship('Image',
+                                backref='children',
+                                primaryjoin="and_(Image.parent_image_id == remote(Image.id), "
+                                            "Image.deleted == False)")
+
     parent_image_id = Column(Integer, ForeignKey('images.id'), nullable=True, index=True)
 
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
