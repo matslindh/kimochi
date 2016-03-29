@@ -317,7 +317,11 @@ class Image(Base):
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=True, index=True)
     variations = relationship("ImageVariation")
 
-    parent_image = relationship('Image', backref='children', remote_side=[id])
+    parent_image = relationship('Image',
+                                backref='children',
+                                primaryjoin="and_(Image.parent_image_id == remote(Image.id), "
+                                            "Image.deleted == False)")
+
     parent_image_id = Column(Integer, ForeignKey('images.id'), nullable=True, index=True)
 
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
@@ -424,15 +428,16 @@ class Image(Base):
 
     @classmethod
     def get_next_and_previous_from_image(cls, image):
-        image_next = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.id != image.id, cls.order >= image.order).\
+        image_next = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.id != image.id, cls.order >= image.order, cls.deleted == False).\
             order_by(cls.order, cls.id).first()
-        image_prev = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.id != image.id, cls.order <= image.order).\
+        image_prev = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.id != image.id, cls.order <= image.order, cls.deleted == False).\
             order_by(desc(cls.order), desc(cls.id)).first()
 
         return {
             'next': image_next,
             'previous': image_prev,
         }
+
 
 class ImageVariation(Base):
     __tablename__ = 'images_variations'
@@ -496,6 +501,9 @@ class Site(Base):
             'pages': pages,
             'footer': {
                 'text': replace_placeholders(self.footer) if self.footer else '',
+            },
+            'header': {
+                'image_url': str(request.imbo.image_url(self.header_imbo_id).max_size(1920, 1080)) if self.header_imbo_id else None,
             },
             'settings': {s.setting: s.value for s in self.settings},
         }
@@ -646,6 +654,7 @@ class SiteSetting(Base):
             DBSession.add(setting)
 
         return setting
+
 
 class User(Base):
     __tablename__ = 'users'
