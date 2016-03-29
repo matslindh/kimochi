@@ -15,8 +15,6 @@ pyramid_config_file = config.get_main_option('pyramid_config_file')
 #fileConfig(config.config_file_name)
 #setup_logging(pyramid_config_file)
 
-print(pyramid_config_file)
-
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
