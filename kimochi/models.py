@@ -424,9 +424,9 @@ class Image(Base):
 
     @classmethod
     def get_next_and_previous_from_image(cls, image):
-        image_next = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.id != image.id, cls.order >= image.order).\
+        image_next = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.id != image.id, cls.order >= image.order, cls.deleted == False).\
             order_by(cls.order, cls.id).first()
-        image_prev = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.id != image.id, cls.order <= image.order).\
+        image_prev = DBSession.query(cls).filter(cls.gallery_id == image.gallery_id, cls.id != image.id, cls.order <= image.order, cls.deleted == False).\
             order_by(desc(cls.order), desc(cls.id)).first()
 
         return {
