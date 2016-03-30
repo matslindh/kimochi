@@ -6,6 +6,7 @@
         <link href="http://fonts.googleapis.com/css?family=Raleway:100" rel="stylesheet" type="text/css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <link rel="stylesheet" href="${request.static_url('kimochi:static/kimochi.css')}">
+        <link rel="icon" type="image/png" href="${request.static_url('kimochi:static/favicon.png')}">
 
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
