@@ -357,7 +357,12 @@ class Image(Base):
                                                                              variation.offset_height,
                                                                              variation.width,
                                                                              variation.height
-                                                                             ).max_size(270, 270))
+                                                                             ).max_size(270, 270)),
+                    '540x540': str(request.imbo.image_url(self.imbo_id).crop(variation.offset_width,
+                                                                             variation.offset_height,
+                                                                             variation.width,
+                                                                             variation.height
+                                                                             ).max_size(540, 540))
                 }
 
         return data
