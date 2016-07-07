@@ -8,6 +8,7 @@ from sqlalchemy import (
     Table,
     Text,
     UniqueConstraint,
+    VARCHAR,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -258,7 +259,7 @@ class PageSectionLayoutSetting(Base):
     page_section_id = Column(Integer, ForeignKey('pages_sections.id'), nullable=False, index=True, primary_key=True)
     page_section = relationship('PageSection', backref='layout_settings')
 
-    setting = Column(Text(length=40), nullable=False, primary_key=True)
+    setting = Column(VARCHAR(length=40), nullable=False, primary_key=True)
     value = Column(Text(length=200))
 
     image_id = Column(Integer, ForeignKey('images.id'), nullable=True)
@@ -311,7 +312,7 @@ class Image(Base):
     __tablename__ = 'images'
 
     id = Column(Integer, primary_key=True)
-    imbo_id = Column(Text(length=80), index=True)
+    imbo_id = Column(VARCHAR(length=80), index=True)
     width = Column(Integer, nullable=False)
     height = Column(Integer, nullable=False)
     order = Column(Integer, default=epoch)
@@ -485,13 +486,13 @@ class Site(Base):
     __tablename__ = 'sites'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Text(length=40), unique=True)
+    name = Column(VARCHAR(length=40), unique=True)
     tagline = Column(Text(length=200), nullable=True)
     meta_description = Column(Text(length=600), nullable=True)
 
     header_imbo_id = Column(Text(length=80), nullable=True)
 
-    key = Column(Text(length=32), unique=True, default=lambda: uuid.uuid4().hex)
+    key = Column(VARCHAR(length=32), unique=True, default=lambda: uuid.uuid4().hex)
 
     footer = Column(Text, nullable=True)
 
@@ -616,7 +617,7 @@ class SiteAPIKey(Base):
     __key_length__ = 32
 
     id = Column(Integer, primary_key=True)
-    key = Column(Text(length=__key_length__), unique=True, default=lambda: uuid.uuid4().hex)
+    key = Column(VARCHAR(length=__key_length__), unique=True, default=lambda: uuid.uuid4().hex)
 
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, index=True)
     site = relationship('Site', backref='api_keys')
@@ -657,7 +658,7 @@ class SiteSetting(Base):
     site_id = Column(Integer, ForeignKey('sites.id'), nullable=False, primary_key=True)
     site = relationship('Site', backref='settings')
 
-    setting = Column(Text(length=40), nullable=False, primary_key=True)
+    setting = Column(VARCHAR(length=40), nullable=False, primary_key=True)
     value = Column(Text(length=200), nullable=False)
 
     @classmethod
@@ -676,7 +677,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
 
-    email = Column(Text(length=80), unique=True)
+    email = Column(VARCHAR(length=80), unique=True)
     password = Column(PasswordType(schemes=[
             'bcrypt',
         ]))
