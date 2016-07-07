@@ -13,6 +13,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy.orm import (
+    joinedload,
     scoped_session,
     sessionmaker,
     relationship,
@@ -115,7 +116,11 @@ class Page(Base):
 
     @classmethod
     def get_for_site_id_and_page_alias(cls, site_id, alias):
-        return DBSession.query(cls).join(PageAlias).filter(cls.site_id == site_id, cls.deleted == False, PageAlias.alias == alias).first()
+        return DBSession\
+            .query(cls)\
+            .join(PageAlias)\
+            .filter(cls.site_id == site_id, cls.deleted == False, PageAlias.alias == alias)\
+            .first()
 
     @classmethod
     def get_for_site_id_and_page_id_or_alias(cls, site_id, page_lookup):
@@ -189,12 +194,12 @@ class PageSection(Base):
     page = relationship('Page', backref='sections')
 
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=True)
-    gallery = relationship('Gallery')
+    gallery = relationship('Gallery', lazy='joined')
 
-    images = relationship('PageSectionImage', cascade="save-update, merge, delete, delete-orphan")
+    images = relationship('PageSectionImage', cascade="save-update, merge, delete, delete-orphan", lazy='joined')
 
     parent_section_id = Column(Integer, ForeignKey('pages_sections.id'))
-    sections = relationship("PageSection", order_by='PageSection.order')
+    sections = relationship("PageSection", order_by='PageSection.order', lazy='joined')
 
     def __json__(self, request):
         return {
@@ -208,7 +213,10 @@ class PageSection(Base):
 
     @classmethod
     def get_active_from_page_id(cls, page_id):
-        return DBSession.query(cls).filter(cls.page_id == page_id, cls.deleted == False, cls.parent_section_id == None).order_by('order').all()
+        return DBSession\
+            .query(cls)\
+            .filter(cls.page_id == page_id, cls.deleted == False, cls.parent_section_id == None)\
+            .order_by('order').all()
 
     @classmethod
     def get_from_page_id_and_page_section_id(cls, page_id, page_section_id):
@@ -280,7 +288,9 @@ class Gallery(Base):
                           backref='gallery',
                           primaryjoin="and_(Gallery.id == Image.gallery_id, "
                                       "Image.deleted == False)",
-                          order_by='asc(Image.order), asc(Image.id)', )
+                          order_by='asc(Image.order), asc(Image.id)',
+                          lazy='joined'
+                          )
 
     def __json__(self, request):
         return {
@@ -315,7 +325,7 @@ class Image(Base):
     deleted = Column(Boolean, default=False)
 
     gallery_id = Column(Integer, ForeignKey('galleries.id'), nullable=True, index=True)
-    variations = relationship("ImageVariation")
+    variations = relationship('ImageVariation', lazy='joined')
 
     parent_image = relationship('Image',
                                 backref='children',
