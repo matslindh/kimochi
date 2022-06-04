@@ -15,23 +15,19 @@ from ..models import (
     DBSession,
     )
 
-from pyramid.security import (
-    authenticated_userid,
-)
-
 
 @view_config(route_name='index', renderer='kimochi:templates/index.mako')
 def index(request):
     return {}
 
 
-@view_config(route_name='sites', request_method='POST', renderer='kimochi:templates/index.mako', check_csrf=True)
+@view_config(route_name='sites', request_method='POST', renderer='kimochi:templates/index.mako', require_csrf=True)
 def site_add(request):
     if 'site_name' not in request.POST or len(request.POST['site_name'].strip()) < 1:
         raise HTTPBadRequest
 
     site = Site(name=request.POST['site_name'].strip())
-    user = User.get_from_id(authenticated_userid(request))
+    user = User.get_from_id(request.authenticated_userid)
 
     site.users.append(user)
     DBSession.add(site)
@@ -40,9 +36,9 @@ def site_add(request):
     return HTTPSeeOther(location=request.route_url('site', site_key=site.key))
 
 
-@view_config(route_name='site_setting_details', request_method='POST', check_csrf=True)
+@view_config(route_name='site_setting_details', request_method='POST', require_csrf=True)
 def site_setting_details(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], request.authenticated_userid)
 
     if 'select_index_page' in request.POST and site.get_active_page(request.POST['select_index_page']):
         site.set_default_index_page(site.get_active_page(request.POST['select_index_page']))
@@ -70,9 +66,9 @@ def site_setting_details(request):
     )
 
 
-@view_config(route_name='site_setting_header_footer', request_method='POST', check_csrf=True)
+@view_config(route_name='site_setting_header_footer', request_method='POST', require_csrf=True)
 def site_setting_header_footer(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], request.authenticated_userid)
 
     if 'footer' in request.POST:
         site.footer = request.POST['footer'].strip()
@@ -92,9 +88,9 @@ def site_setting_header_footer(request):
     )
 
 
-@view_config(route_name='site_setting_social_media', request_method='POST', check_csrf=True)
+@view_config(route_name='site_setting_social_media', request_method='POST', require_csrf=True)
 def site_setting_social_media(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], request.authenticated_userid)
     updated_details = False
 
     if 'social_media_facebook' in request.POST:
@@ -113,9 +109,9 @@ def site_setting_social_media(request):
     )
 
 
-@view_config(route_name='site_setting_aspect_ratios', request_method='POST', check_csrf=True)
+@view_config(route_name='site_setting_aspect_ratios', request_method='POST', require_csrf=True)
 def site_setting_aspect_ratios(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], request.authenticated_userid)
 
     if 'aspect_ratio_width' in request.POST and 'aspect_ratio_height' in request.POST:
         try:
@@ -136,9 +132,9 @@ def site_setting_aspect_ratios(request):
     )
 
 
-@view_config(route_name='site_setting_api_keys', request_method='POST', check_csrf=True)
+@view_config(route_name='site_setting_api_keys', request_method='POST', require_csrf=True)
 def site_setting_api_keys(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], request.authenticated_userid)
 
     if 'command' in request.POST:
         if request.POST['command'] == 'generate_api_key' and len(site.api_keys) < 20:
@@ -162,7 +158,7 @@ def site_setting_api_keys(request):
 @view_config(route_name='site_setting_api_keys', renderer='kimochi:templates/site_setting_api_keys.mako')
 @view_config(route_name='site_setting_aspect_ratios', renderer='kimochi:templates/site_setting_aspect_ratios.mako')
 def site_details(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], request.authenticated_userid)
 
     return {
         'site': site,

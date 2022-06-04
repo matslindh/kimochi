@@ -20,18 +20,14 @@ from ..models import (
     DBSession,
     )
 
-from pyramid.security import (
-    authenticated_userid,
-)
-
 from pyramid.renderers import render
 
 import collections
 
 
-@view_config(route_name='site_pages', request_method='POST', check_csrf=True)
+@view_config(route_name='site_pages', request_method='POST', require_csrf=True)
 def site_pages(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], request.authenticated_userid)
 
     if 'page_name' in request.POST and len(request.POST['page_name'].strip()) > 0:
         first_page = not site.pages
@@ -45,7 +41,7 @@ def site_pages(request):
 
 @view_config(route_name='site_pages', request_method='GET', renderer='kimochi:templates/site_pages.mako')
 def site_pages_list(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], request.authenticated_userid)
     pages = site.pages_available()
 
     if 'category' in request.GET:
@@ -60,9 +56,9 @@ def site_pages_list(request):
     }
 
 
-@view_config(route_name='site_pages', request_method='POST', renderer='json', check_csrf=True, xhr=True)
+@view_config(route_name='site_pages', request_method='POST', renderer='json', require_csrf=True, xhr=True)
 def site_pages_update(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], request.authenticated_userid)
 
     if 's[]' not in request.POST:
         raise HTTPBadRequest
@@ -80,10 +76,10 @@ def site_pages_update(request):
     }
 
 
-@view_config(route_name='site_page', request_method='POST', renderer='kimochi:templates/site_page.mako', check_csrf=True, xhr=False)
-@view_config(route_name='site_page', request_method='POST', renderer='json', check_csrf=True, xhr=True)
+@view_config(route_name='site_page', request_method='POST', renderer='kimochi:templates/site_page.mako', require_csrf=True, xhr=False)
+@view_config(route_name='site_page', request_method='POST', renderer='json', require_csrf=True, xhr=True)
 def site_page_update(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], request.authenticated_userid)
     page = Page.get_for_site_id_and_page_id(site.id, request.matchdict['page_id'])
 
     if not page:
@@ -247,7 +243,7 @@ def site_page_update(request):
 
 @view_config(route_name='site_page', renderer='kimochi:templates/site_page.mako')
 def site_page(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], request.authenticated_userid)
     page = Page.get_for_site_id_and_page_id(site.id, request.matchdict['page_id'])
 
     if not page:

@@ -4,7 +4,6 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.security import (
     Authenticated,
     NO_PERMISSION_REQUIRED,
-    authenticated_userid,
 )
 
 from sqlalchemy import engine_from_config
@@ -26,8 +25,8 @@ import imboclient.client as imboclient
 def add_user(event):
     event['user'] = None
 
-    if authenticated_userid(event['request']):
-        event['user'] = User.get_from_id(authenticated_userid(event['request']))
+    if event['request'].authenticated_userid:
+        event['user'] = User.get_from_id(event['request'].authenticated_userid)
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -52,13 +51,13 @@ def main(global_config, **settings):
 
     def api_configuration(config):
         config.add_route('api_site_image', '/sites/{site_key}/images/{image_id}',
-                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
+                         factory=APIRootFactory)
         config.add_route('api_site_gallery', '/sites/{site_key}/galleries/{gallery_id}',
-                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
+                         factory=APIRootFactory)
         config.add_route('api_site_gallery_image', '/sites/{site_key}/galleries/{gallery_id}/image/{image_id}',
-                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
+                         factory=APIRootFactory)
         config.add_route('api_site_page', '/sites/{site_key}/pages/{page_id}',
-                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
+                         factory=APIRootFactory)
 
     config.include('pyramid_beaker')
     config.include('pyramid_mako')
