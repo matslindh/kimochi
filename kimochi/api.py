@@ -18,6 +18,7 @@ from .models import (
     NoAccessException,
 )
 
+
 @view_defaults(renderer='json', permission='api')
 class SiteAPI:
     def __init__(self, request):

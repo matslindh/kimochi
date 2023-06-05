@@ -4,7 +4,9 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.security import (
     Authenticated,
     NO_PERMISSION_REQUIRED,
-    authenticated_userid,
+)
+from pyramid.authentication import (
+    SessionAuthenticationHelper,
 )
 
 from sqlalchemy import engine_from_config
@@ -21,13 +23,16 @@ from pyramid.events import subscriber
 from pyramid.events import BeforeRender
 
 import imboclient.client as imboclient
+session_helper = SessionAuthenticationHelper()
+
 
 @subscriber(BeforeRender)
 def add_user(event):
     event['user'] = None
 
-    if authenticated_userid(event['request']):
-        event['user'] = User.get_from_id(authenticated_userid(event['request']))
+    if session_helper.authenticated_userid(event['request']):
+        event['user'] = User.get_from_id(session_helper.authenticated_userid(event['request']))
+
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -51,14 +56,12 @@ def main(global_config, **settings):
     )
 
     def api_configuration(config):
-        config.add_route('api_site_image', '/sites/{site_key}/images/{image_id}',
-                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
-        config.add_route('api_site_gallery', '/sites/{site_key}/galleries/{gallery_id}',
-                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
-        config.add_route('api_site_gallery_image', '/sites/{site_key}/galleries/{gallery_id}/image/{image_id}',
-                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
-        config.add_route('api_site_page', '/sites/{site_key}/pages/{page_id}',
-                         permission=NO_PERMISSION_REQUIRED, factory=APIRootFactory)
+        config.add_route('api_site_gallery', '/sites/{site_key}/galleries/{gallery_id}', factory=APIRootFactory)
+        config.add_view('kimochi.api.SiteAPI', attr='gallery', route_name='api_site_gallery', permission=NO_PERMISSION_REQUIRED)
+        config.add_route('api_site_gallery_image', '/sites/{site_key}/galleries/{gallery_id}/image/{image_id}', factory=APIRootFactory)
+        config.add_view('kimochi.api.SiteAPI', attr='gallery_image', route_name='api_site_gallery_image', permission=NO_PERMISSION_REQUIRED)
+        config.add_route('api_site_page', '/sites/{site_key}/pages/{page_id}', factory=APIRootFactory)
+        config.add_view('kimochi.api.SiteAPI', attr='page', route_name='api_site_page', permission=NO_PERMISSION_REQUIRED)
 
     config.include('pyramid_beaker')
     config.include('pyramid_mako')

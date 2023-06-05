@@ -34,7 +34,7 @@ from pyramid.security import (
     Everyone,
 )
 
-from zope.sqlalchemy import ZopeTransactionExtension
+from zope.sqlalchemy import register
 from slugify import slugify
 
 import calendar
@@ -48,7 +48,10 @@ import datetime
 def epoch():
     return calendar.timegm(time.gmtime())
 
-DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
+
+DBSession = scoped_session(sessionmaker(autoflush=False))
+register(DBSession)
+
 Base = declarative_base()
 
 

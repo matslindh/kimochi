@@ -20,9 +20,7 @@ from ..models import (
     DBSession,
     )
 
-from pyramid.security import (
-    authenticated_userid,
-)
+from kimochi import session_helper
 
 from pyramid.session import check_csrf_token
 import time
@@ -30,7 +28,7 @@ import time
 
 @view_config(route_name='site_galleries', renderer='kimochi:templates/site_galleries.mako')
 def site_galleries(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], session_helper.authenticated_userid(request))
 
     if request.POST and 'gallery_name' in request.POST and len(request.POST['gallery_name'].strip()) > 0:
         gallery = Gallery(name=request.POST['gallery_name'].strip(), site=site)
@@ -49,7 +47,7 @@ def site_galleries(request):
 
 @view_config(route_name='site_gallery', renderer='kimochi:templates/site_gallery.mako')
 def site_gallery(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], session_helper.authenticated_userid(request))
     gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
 
     if not gallery:
@@ -61,9 +59,9 @@ def site_gallery(request):
     }
 
 
-@view_config(route_name='site_gallery_images', request_method='POST', renderer='json', check_csrf=True)
+@view_config(route_name='site_gallery_images', request_method='POST', renderer='json', require_csrf=True)
 def site_gallery_images(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], session_helper.authenticated_userid(request))
     gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
 
     if not gallery:
@@ -106,7 +104,7 @@ def site_gallery_images(request):
 
 @view_config(route_name='site_gallery_image', renderer='kimochi:templates/site_gallery_image.mako', request_method='GET')
 def site_gallery_image(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], session_helper.authenticated_userid(request))
     gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
 
     if not gallery:
@@ -124,9 +122,9 @@ def site_gallery_image(request):
     }
 
 
-@view_config(route_name='site_gallery_image', renderer='json', request_method='POST', check_csrf=True)
+@view_config(route_name='site_gallery_image', renderer='json', request_method='POST', require_csrf=True)
 def site_gallery_image_update(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], session_helper.authenticated_userid(request))
     gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
 
     if not gallery:
@@ -176,7 +174,7 @@ def site_gallery_image_update(request):
 
 @view_config(route_name='site_gallery_image_variation', renderer='kimochi:templates/site_gallery_image_variation.mako')
 def site_gallery_image_variation(request):
-    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], authenticated_userid(request))
+    site = Site.get_from_key_and_user_id(request.matchdict['site_key'], session_helper.authenticated_userid(request))
     gallery = Gallery.get_from_site_id_and_gallery_id(site.id, request.matchdict['gallery_id'])
 
     if not gallery:
