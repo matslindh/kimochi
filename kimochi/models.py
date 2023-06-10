@@ -356,6 +356,7 @@ class Image(Base):
         if self.imbo_id:
             data['preview'] = {
                 '400x200': str(request.imbo.image_url(self.imbo_id).max_size(max_width=400, max_height=200)),
+                '800x400': str(request.imbo.image_url(self.imbo_id).max_size(max_width=800, max_height=400)),
             }
 
             data['source'] = {
@@ -376,7 +377,12 @@ class Image(Base):
                                                                              variation.offset_height,
                                                                              variation.width,
                                                                              variation.height
-                                                                             ).max_size(540, 540))
+                                                                             ).max_size(540, 540)),
+                    '810x810': str(request.imbo.image_url(self.imbo_id).crop(variation.offset_width,
+                                                                             variation.offset_height,
+                                                                             variation.width,
+                                                                             variation.height
+                                                                             ).max_size(810, 810)),
                 }
 
         return data
